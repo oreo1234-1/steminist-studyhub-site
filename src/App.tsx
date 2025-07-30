@@ -13,6 +13,9 @@ import Opportunities from "./pages/Opportunities";
 import Impact from "./pages/Impact";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import AIStudyTools from "./pages/AIStudyTools";
+import CommunityForum from "./pages/CommunityForum";
+import Gamification from "./pages/Gamification";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +35,9 @@ const App = () => (
           <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/impact" element={<Impact />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/ai-tools" element={<AIStudyTools />} />
+          <Route path="/community" element={<CommunityForum />} />
+          <Route path="/gamification" element={<Gamification />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

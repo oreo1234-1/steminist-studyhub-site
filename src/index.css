@@ -8,35 +8,36 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 150 25% 15%;
+    /* STEMinist Study Hub Design System */
+    --background: 44 33% 97%; /* Warm Ivory #F9F6EF */
+    --foreground: 150 87% 13%; /* Deep Dark Green #014421 */
 
     --card: 0 0% 100%;
-    --card-foreground: 150 25% 15%;
+    --card-foreground: 150 87% 13%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 150 25% 15%;
+    --popover-foreground: 150 87% 13%;
 
-    --primary: 150 40% 25%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 150 87% 13%; /* Deep Dark Green #014421 */
+    --primary-foreground: 44 33% 97%;
 
-    --secondary: 320 60% 85%;
-    --secondary-foreground: 150 40% 25%;
+    --secondary: 15 59% 88%; /* Soft Pink #F4CFC9 */
+    --secondary-foreground: 150 87% 13%;
 
-    --muted: 320 30% 95%;
-    --muted-foreground: 150 15% 45%;
+    --muted: 44 38% 95%; /* Pale Beige #F5EFE7 */
+    --muted-foreground: 150 50% 35%;
 
-    --accent: 320 65% 75%;
-    --accent-foreground: 150 40% 25%;
+    --accent: 44 46% 81%; /* Pale Gold #E9D8A6 */
+    --accent-foreground: 150 87% 13%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 44 38% 90%;
+    --input: 44 38% 90%;
+    --ring: 150 87% 13%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
