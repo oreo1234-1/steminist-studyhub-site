@@ -2,9 +2,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Brain, FileText, MessageCircle, Calendar } from "lucide-react";
+import { Brain, FileText, MessageCircle, Calendar, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const AIStudyTools = () => {
+  const { toast } = useToast();
+  const [loading, setLoading] = useState<string | null>(null);
+  const [results, setResults] = useState<any>({});
+
   const tools = [
     {
       title: "AI Flashcard Generator",
@@ -31,6 +38,142 @@ const AIStudyTools = () => {
       example: "Input: Chemistry exam in 2 weeks → Output: Daily study plan"
     }
   ];
+
+  const handleFlashcardGeneration = async (notes: string) => {
+    if (!notes.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter some notes to generate flashcards",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading('flashcards');
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-flashcards', {
+        body: { notes }
+      });
+
+      if (error) throw error;
+
+      setResults(prev => ({ ...prev, flashcards: data.flashcards }));
+      toast({
+        title: "Success! ✨",
+        description: `Generated ${data.flashcards.length} flashcards from your notes`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate flashcards. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleSummarization = async (text: string) => {
+    if (!text.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter text to summarize",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading('summarizer');
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-summarizer', {
+        body: { text }
+      });
+
+      if (error) throw error;
+
+      setResults(prev => ({ ...prev, summary: data.summary }));
+      toast({
+        title: "Success! 📝",
+        description: "Generated summary of your text",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to generate summary. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleChatbot = async (question: string) => {
+    if (!question.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a question",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading('chatbot');
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-chatbot', {
+        body: { question }
+      });
+
+      if (error) throw error;
+
+      setResults(prev => ({ ...prev, chatAnswer: data.answer }));
+      toast({
+        title: "Success! 💬",
+        description: "Your STEM study buddy has answered your question",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to get answer. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleStudyPlan = async (examDate: string, topics: string) => {
+    if (!examDate || !topics.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter both exam date and topics",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading('studyplan');
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-study-plan', {
+        body: { examDate, topics }
+      });
+
+      if (error) throw error;
+
+      setResults(prev => ({ ...prev, studyPlan: data }));
+      toast({
+        title: "Success! 📅",
+        description: "Created your personalized study plan",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create study plan. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,50 +212,165 @@ const AIStudyTools = () => {
                 {tool.title === "AI Flashcard Generator" && (
                   <div className="space-y-3">
                     <Textarea 
+                      id="flashcard-notes"
                       placeholder="Paste your notes here..."
                       className="min-h-[100px]"
                     />
-                    <Button className="w-full bg-primary hover:bg-primary/90">
-                      Generate Flashcards ✨
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90"
+                      onClick={() => {
+                        const notes = (document.getElementById('flashcard-notes') as HTMLTextAreaElement)?.value;
+                        handleFlashcardGeneration(notes);
+                      }}
+                      disabled={loading === 'flashcards'}
+                    >
+                      {loading === 'flashcards' ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        'Generate Flashcards ✨'
+                      )}
                     </Button>
+                    {results.flashcards && (
+                      <div className="mt-4 p-4 bg-secondary/20 rounded-lg">
+                        <h4 className="font-semibold mb-2">Generated Flashcards:</h4>
+                        <div className="space-y-2 max-h-40 overflow-y-auto">
+                          {results.flashcards.map((card: any, i: number) => (
+                            <div key={i} className="text-sm border rounded p-2">
+                              <div className="font-medium">Q: {card.question}</div>
+                              <div className="text-muted-foreground">A: {card.answer}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {tool.title === "AI Summarizer" && (
                   <div className="space-y-3">
                     <Textarea 
+                      id="summarizer-text"
                       placeholder="Paste text to summarize..."
                       className="min-h-[100px]"
                     />
-                    <Button className="w-full bg-primary hover:bg-primary/90">
-                      Create Summary 📝
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90"
+                      onClick={() => {
+                        const text = (document.getElementById('summarizer-text') as HTMLTextAreaElement)?.value;
+                        handleSummarization(text);
+                      }}
+                      disabled={loading === 'summarizer'}
+                    >
+                      {loading === 'summarizer' ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Summarizing...
+                        </>
+                      ) : (
+                        'Create Summary 📝'
+                      )}
                     </Button>
+                    {results.summary && (
+                      <div className="mt-4 p-4 bg-secondary/20 rounded-lg">
+                        <h4 className="font-semibold mb-2">Summary:</h4>
+                        <div className="text-sm whitespace-pre-wrap max-h-40 overflow-y-auto">
+                          {results.summary}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {tool.title === "AI STEM Chatbot" && (
                   <div className="space-y-3">
                     <Input 
+                      id="chatbot-question"
                       placeholder="Ask me anything about STEM..."
                     />
-                    <Button className="w-full bg-primary hover:bg-primary/90">
-                      Ask Question 💬
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90"
+                      onClick={() => {
+                        const question = (document.getElementById('chatbot-question') as HTMLInputElement)?.value;
+                        handleChatbot(question);
+                      }}
+                      disabled={loading === 'chatbot'}
+                    >
+                      {loading === 'chatbot' ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Thinking...
+                        </>
+                      ) : (
+                        'Ask Question 💬'
+                      )}
                     </Button>
+                    {results.chatAnswer && (
+                      <div className="mt-4 p-4 bg-secondary/20 rounded-lg">
+                        <h4 className="font-semibold mb-2">Study Buddy Says:</h4>
+                        <div className="text-sm whitespace-pre-wrap max-h-40 overflow-y-auto">
+                          {results.chatAnswer}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {tool.title === "Study Plan Builder" && (
                   <div className="space-y-3">
                     <Input 
+                      id="exam-date"
                       type="date"
                       placeholder="Exam date"
                     />
                     <Input 
+                      id="study-topics"
                       placeholder="Enter topics (e.g., Chemistry, Biology)"
                     />
-                    <Button className="w-full bg-primary hover:bg-primary/90">
-                      Build Study Plan 📅
+                    <Button 
+                      className="w-full bg-primary hover:bg-primary/90"
+                      onClick={() => {
+                        const examDate = (document.getElementById('exam-date') as HTMLInputElement)?.value;
+                        const topics = (document.getElementById('study-topics') as HTMLInputElement)?.value;
+                        handleStudyPlan(examDate, topics);
+                      }}
+                      disabled={loading === 'studyplan'}
+                    >
+                      {loading === 'studyplan' ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Creating Plan...
+                        </>
+                      ) : (
+                        'Build Study Plan 📅'
+                      )}
                     </Button>
+                    {results.studyPlan && (
+                      <div className="mt-4 p-4 bg-secondary/20 rounded-lg">
+                        <h4 className="font-semibold mb-2">Your Study Plan:</h4>
+                        <div className="text-sm max-h-40 overflow-y-auto">
+                          {results.studyPlan.studyPlan ? (
+                            <div className="space-y-2">
+                              {results.studyPlan.studyPlan.slice(0, 3).map((day: any, i: number) => (
+                                <div key={i} className="border rounded p-2">
+                                  <div className="font-medium">Day {day.day}: {day.topic}</div>
+                                  <div className="text-xs text-muted-foreground">{day.estimatedTime}</div>
+                                </div>
+                              ))}
+                              {results.studyPlan.studyPlan.length > 3 && (
+                                <div className="text-xs text-muted-foreground">
+                                  ... and {results.studyPlan.studyPlan.length - 3} more days
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="whitespace-pre-wrap">{results.studyPlan.rawResponse}</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>

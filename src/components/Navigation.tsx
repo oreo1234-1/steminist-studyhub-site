@@ -29,9 +29,12 @@ const Navigation = () => {
     <nav className="bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-4">
-          <Link to="/" className="flex items-center gap-2 text-2xl font-bold font-playfair">
-            <Heart className="h-6 w-6 text-accent" />
-            STEMinist Study Hub
+          <Link to="/" className="flex items-center gap-3">
+            <img 
+              src="/lovable-uploads/8f8193e3-0898-424f-8592-ce16830b43ed.png" 
+              alt="STEMinist Study Hub Logo" 
+              className="h-12 w-auto"
+            />
           </Link>
           
           <div className="hidden md:flex items-center space-x-1">

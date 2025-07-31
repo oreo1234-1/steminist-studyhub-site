@@ -8,34 +8,34 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* STEMinist Study Hub Design System */
-    --background: 44 33% 97%; /* Warm Ivory #F9F6EF */
-    --foreground: 150 87% 13%; /* Deep Dark Green #014421 */
+    /* STEMinist Study Hub Design System - Pink/Lavender & Dark Green */
+    --background: 315 65% 95%; /* Soft Pink/Lavender Background */
+    --foreground: 140 100% 20%; /* Dark Green Text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 150 87% 13%;
+    --card: 315 45% 98%;
+    --card-foreground: 140 100% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 150 87% 13%;
+    --popover: 315 45% 98%;
+    --popover-foreground: 140 100% 20%;
 
-    --primary: 150 87% 13%; /* Deep Dark Green #014421 */
-    --primary-foreground: 44 33% 97%;
+    --primary: 140 100% 20%; /* Dark Green Primary */
+    --primary-foreground: 315 65% 95%;
 
-    --secondary: 15 59% 88%; /* Soft Pink #F4CFC9 */
-    --secondary-foreground: 150 87% 13%;
+    --secondary: 315 60% 85%; /* Medium Pink/Lavender */
+    --secondary-foreground: 140 100% 20%;
 
-    --muted: 44 38% 95%; /* Pale Beige #F5EFE7 */
-    --muted-foreground: 150 50% 35%;
+    --muted: 315 40% 92%; /* Light Pink/Lavender */
+    --muted-foreground: 140 60% 30%;
 
-    --accent: 44 46% 81%; /* Pale Gold #E9D8A6 */
-    --accent-foreground: 150 87% 13%;
+    --accent: 315 70% 80%; /* Vibrant Pink/Lavender */
+    --accent-foreground: 140 100% 20%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 44 38% 90%;
-    --input: 44 38% 90%;
-    --ring: 150 87% 13%;
+    --border: 315 30% 85%;
+    --input: 315 30% 90%;
+    --ring: 140 100% 20%;
 
     --radius: 0.75rem;
 
