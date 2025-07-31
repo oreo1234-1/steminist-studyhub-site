@@ -1,8 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { LogOut, User, Heart } from "lucide-react";
 
 const Navigation = () => {
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const navItems = [
     { path: "/", label: "Home" },
@@ -18,15 +21,20 @@ const Navigation = () => {
     { path: "/contact", label: "Contact" },
   ];
 
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <nav className="bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-4">
-          <Link to="/" className="text-2xl font-bold">
+          <Link to="/" className="flex items-center gap-2 text-2xl font-bold font-playfair">
+            <Heart className="h-6 w-6 text-accent" />
             STEMinist Study Hub
           </Link>
           
-          <div className="hidden md:flex space-x-1">
+          <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <Button
                 key={item.path}
@@ -37,6 +45,37 @@ const Navigation = () => {
                 <Link to={item.path}>{item.label}</Link>
               </Button>
             ))}
+            
+            {user ? (
+              <div className="flex items-center gap-2 ml-4">
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="text-primary-foreground hover:bg-primary-foreground/10"
+                >
+                  <Link to="/dashboard">
+                    <User className="h-4 w-4 mr-1" />
+                    Dashboard
+                  </Link>
+                </Button>
+                <Button
+                  onClick={handleSignOut}
+                  variant="ghost"
+                  className="text-primary-foreground hover:bg-primary-foreground/10"
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button
+                asChild
+                variant="secondary"
+                className="ml-4 bg-accent hover:bg-accent/90 text-white"
+              >
+                <Link to="/auth">Join Us! 💖</Link>
+              </Button>
+            )}
           </div>
 
           <div className="md:hidden">
