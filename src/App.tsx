@@ -19,6 +19,7 @@ import CommunityForum from "./pages/CommunityForum";
 import Gamification from "./pages/Gamification";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/mentors" element={<Mentors />} />
             <Route path="/workshops" element={<Workshops />} />

@@ -20,16 +20,38 @@ const Auth = () => {
 
   useEffect(() => {
     // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        navigate('/');
+        // Check if user has completed onboarding
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('portfolio_data')
+          .eq('id', session.user.id)
+          .single();
+        
+        const hasCompletedOnboarding = profile?.portfolio_data && 
+          typeof profile.portfolio_data === 'object' && 
+          'onboarding_completed' in profile.portfolio_data ? 
+          (profile.portfolio_data as any).onboarding_completed : false;
+        navigate(hasCompletedOnboarding ? '/' : '/onboarding');
       }
     });
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        navigate('/');
+        // Check if user has completed onboarding
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('portfolio_data')
+          .eq('id', session.user.id)
+          .single();
+        
+        const hasCompletedOnboarding = profile?.portfolio_data && 
+          typeof profile.portfolio_data === 'object' && 
+          'onboarding_completed' in profile.portfolio_data ? 
+          (profile.portfolio_data as any).onboarding_completed : false;
+        navigate(hasCompletedOnboarding ? '/' : '/onboarding');
       }
     });
 
