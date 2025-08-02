@@ -113,13 +113,13 @@ const Auth = () => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleOAuthSignIn = async (provider: 'google' | 'github' | 'discord' | 'apple') => {
     setLoading(true);
     setError('');
 
     try {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider,
         options: {
           redirectTo: `${window.location.origin}/`
         }
@@ -277,16 +277,53 @@ const Auth = () => {
                 </div>
               </div>
               
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full mt-4 border-2 border-accent/20 hover:border-accent/40"
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-              >
-                <span className="mr-2">🔍</span>
-                Google
-              </Button>
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-2 border-accent/20 hover:border-accent/40"
+                  onClick={() => handleOAuthSignIn('google')}
+                  disabled={loading}
+                >
+                  <span className="mr-2">🔍</span>
+                  Google
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-2 border-accent/20 hover:border-accent/40"
+                  onClick={() => handleOAuthSignIn('github')}
+                  disabled={loading}
+                >
+                  <span className="mr-2">⚡</span>
+                  GitHub
+                </Button>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3 mt-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-2 border-accent/20 hover:border-accent/40"
+                  onClick={() => handleOAuthSignIn('discord')}
+                  disabled={loading}
+                >
+                  <span className="mr-2">🎮</span>
+                  Discord
+                </Button>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-2 border-accent/20 hover:border-accent/40"
+                  onClick={() => handleOAuthSignIn('apple')}
+                  disabled={loading}
+                >
+                  <span className="mr-2">🍎</span>
+                  Apple
+                </Button>
+              </div>
             </div>
 
             <div className="text-center mt-6 text-sm text-muted-foreground">
