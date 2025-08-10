@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BookOpen, Users, Calendar, Target, Heart, Mail, Brain, MessageCircle, Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
-import FeatureMapSection from "@/components/sections/FeatureMapSection";
+
 
 const Home = () => {
   const quickAccessItems = [
@@ -107,7 +107,6 @@ const Home = () => {
         </div>
       </div>
 
-      <FeatureMapSection />
 
       {/* Testimonials */}
       <div className="mb-16 bg-muted/30 rounded-xl p-8">
