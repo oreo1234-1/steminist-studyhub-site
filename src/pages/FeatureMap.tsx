@@ -96,15 +96,15 @@ export default function FeatureMap() {
   return (
     <>
       <Helmet>
-        <title>Feature Map | STEMinist Study Hub</title>
-        <meta name="description" content="Explore live and upcoming features: AI tools, gamification, community, events, resources, and more." />
+        <title>STEMinist Study Hub — Merged Feature Map</title>
+        <meta name="description" content="Merged Feature Map: AI tools, gamification, community, events, resources, and more." />
         <link rel="canonical" href={canonical} />
       </Helmet>
 
       <header className="bg-gradient-to-b from-primary/10 to-background border-b">
         <div className="container mx-auto px-4 py-10">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-primary">
-            STEMinist Study Hub Feature Map
+            STEMinist Study Hub — Merged Feature Map
           </h1>
           <p className="mt-2 max-w-2xl text-muted-foreground">
             See what’s live today and what’s coming next across AI learning, gamification, community, events, and resources.
