@@ -20,7 +20,7 @@ import Gamification from "./pages/Gamification";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
-import FeatureMap from "./pages/FeatureMap";
+
 
 const queryClient = new QueryClient();
 
@@ -47,7 +47,7 @@ const App = () => (
             <Route path="/ai-tools" element={<AIStudyTools />} />
             <Route path="/community" element={<CommunityForum />} />
             <Route path="/gamification" element={<Gamification />} />
-            <Route path="/feature-map" element={<FeatureMap />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

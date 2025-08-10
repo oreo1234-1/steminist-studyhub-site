@@ -27,7 +27,6 @@ const Navigation = () => {
   const resourceItems = [
     { path: "/study-materials", label: "Study Materials" },
     { path: "/opportunities", label: "Opportunities" },
-    { path: "/feature-map", label: "Feature Map" },
     { path: "/impact", label: "Impact Stories" },
   ];
 

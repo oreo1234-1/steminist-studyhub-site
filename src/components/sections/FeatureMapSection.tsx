@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -90,32 +89,22 @@ const StatusBadge = ({ status }: { status: FeatureItem["status"] }) => (
   </Badge>
 );
 
-export default function FeatureMap() {
-  const canonical = typeof window !== "undefined" ? `${window.location.origin}/feature-map` : "/feature-map";
-
+export default function FeatureMapSection() {
   return (
-    <>
-      <Helmet>
-        <title>STEMinist Study Hub — Merged Feature Map</title>
-        <meta name="description" content="Merged Feature Map: AI tools, gamification, community, events, resources, and more." />
-        <link rel="canonical" href={canonical} />
-      </Helmet>
-
-      <header className="bg-gradient-to-b from-primary/10 to-background border-b">
-        <div className="container mx-auto px-4 py-10">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-primary">
+    <section id="feature-map" aria-labelledby="feature-map-heading" className="py-16">
+      <div className="container mx-auto px-4">
+        <header className="mb-6">
+          <h2 id="feature-map-heading" className="text-2xl md:text-3xl font-bold tracking-tight text-primary">
             STEMinist Study Hub — Merged Feature Map
-          </h1>
+          </h2>
           <p className="mt-2 max-w-2xl text-muted-foreground">
-            See what’s live today and what’s coming next across AI learning, gamification, community, events, and resources.
+            Explore live and upcoming features across AI learning, gamification, community, events, and resources.
           </p>
-        </div>
-      </header>
+        </header>
 
-      <main className="container mx-auto px-4 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {sections.map((section) => (
-            <section key={section.title} aria-labelledby={section.title.replace(/\s+/g, "-").toLowerCase()}>
+            <article key={section.title} aria-labelledby={section.title.replace(/\s+/g, "-").toLowerCase()}>
               <Card className="h-full">
                 <CardHeader>
                   <CardTitle id={section.title.replace(/\s+/g, "-").toLowerCase()} className="flex items-center justify-between">
@@ -145,14 +134,10 @@ export default function FeatureMap() {
                   ))}
                 </CardContent>
               </Card>
-            </section>
+            </article>
           ))}
         </div>
-
-        <aside className="mt-10 text-sm text-muted-foreground">
-          Can’t find a feature you want? Tell us and we’ll prioritize it.
-        </aside>
-      </main>
-    </>
+      </div>
+    </section>
   );
 }
