@@ -2,6 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Crown, Lightbulb, Users, Star, Target } from "lucide-react";
+import StreakCard from "@/components/gamification/StreakCard";
+import PomodoroCard from "@/components/gamification/PomodoroCard";
 
 const Gamification = () => {
   const leaderboard = [
@@ -84,6 +86,11 @@ const Gamification = () => {
             </div>
           </CardContent>
         </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <StreakCard />
+          <PomodoroCard />
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Leaderboard */}
