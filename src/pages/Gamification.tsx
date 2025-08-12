@@ -1,27 +1,111 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Crown, Lightbulb, Users, Star, Target } from "lucide-react";
+import { Trophy, Crown, Star, Target } from "lucide-react";
 import StreakCard from "@/components/gamification/StreakCard";
 import PomodoroCard from "@/components/gamification/PomodoroCard";
-
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { Helmet } from "react-helmet-async";
+import { useMemo } from "react";
 const Gamification = () => {
-  const leaderboard = [
-    { rank: 1, name: "Sarah M.", points: 2850, avatar: "👩🏽‍💻", badge: "STEM Queen 👑" },
-    { rank: 2, name: "Maya P.", points: 2720, avatar: "👩🏾‍🔬", badge: "Quiz Master 💡" },
-    { rank: 3, name: "Alex Chen", points: 2650, avatar: "👩🏻‍💻", badge: "Active Helper 🤝" },
-    { rank: 4, name: "Priya K.", points: 2580, avatar: "👩🏽‍🔬", badge: "Study Star ⭐" },
-    { rank: 5, name: "Emma L.", points: 2420, avatar: "👩🏼‍🔬", badge: "Rising Scholar 📚" }
-  ];
+  const { user } = useAuth();
 
-  const badges = [
-    { name: "STEM Queen", icon: "👑", description: "Earned 2000+ points", earned: true, rarity: "Legendary" },
-    { name: "Quiz Master", icon: "💡", description: "Completed 50+ quizzes", earned: true, rarity: "Epic" },
-    { name: "Active Helper", icon: "🤝", description: "Helped 25+ students", earned: true, rarity: "Rare" },
-    { name: "Study Star", icon: "⭐", description: "Study streak of 30 days", earned: false, rarity: "Epic" },
-    { name: "Workshop Warrior", icon: "🎯", description: "Attended 10+ workshops", earned: false, rarity: "Common" },
-    { name: "Knowledge Seeker", icon: "🔍", description: "Read 100+ study materials", earned: false, rarity: "Rare" }
-  ];
+  const { data: userPoints } = useQuery({
+    queryKey: ["userPoints", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from("user_points")
+        .select("user_id, points, current_level, total_earned")
+        .eq("user_id", user.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const { data: userRank } = useQuery({
+    queryKey: ["userRank", userPoints?.points],
+    queryFn: async () => {
+      if (!userPoints) return null;
+      const { count, error } = await supabase
+        .from("user_points")
+        .select("id", { count: "exact", head: true })
+        .gt("points", userPoints.points ?? 0);
+      if (error) throw error;
+      return (count ?? 0) + 1;
+    },
+    enabled: !!userPoints,
+  });
+
+  const { data: leaderboardData = [] } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: async () => {
+      const { data: up, error } = await supabase
+        .from("user_points")
+        .select("user_id, points")
+        .order("points", { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      const ids = (up || []).map((u) => u.user_id).filter(Boolean) as string[];
+      let profilesMap = new Map<string, { full_name: string | null }>();
+      if (ids.length) {
+        const { data: profs } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .in("id", ids);
+        if (profs) {
+          profilesMap = new Map(
+            profs.map((p: any) => [p.id as string, { full_name: p.full_name }])
+          );
+        }
+      }
+      return (up || []).map((row: any, idx: number) => ({
+        rank: idx + 1,
+        name: profilesMap.get(row.user_id as string)?.full_name || "User",
+        points: row.points || 0,
+      }));
+    },
+  });
+
+  const { data: badgesAll = [] } = useQuery({
+    queryKey: ["badgesAll"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("badges")
+        .select("id, name, description, rarity, icon");
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const { data: userBadgeIds = [] } = useQuery({
+    queryKey: ["userBadges", user?.id],
+    queryFn: async () => {
+      if (!user) return [] as string[];
+      const { data, error } = await supabase
+        .from("user_badges")
+        .select("badge_id")
+        .eq("user_id", user.id);
+      if (error) throw error;
+      return (data || []).map((b: any) => b.badge_id).filter(Boolean);
+    },
+    enabled: !!user,
+  });
+
+  const badges = useMemo(() => {
+    const earnedSet = new Set(userBadgeIds as string[]);
+    return (badgesAll as any[]).map((b: any) => ({
+      name: b.name,
+      icon: b.icon ?? "🏅",
+      description: b.description,
+      earned: earnedSet.has(b.id),
+      rarity: b.rarity ?? "common",
+    }));
+  }, [badgesAll, userBadgeIds]);
 
   const activities = [
     { action: "Daily login", points: "+10", color: "text-green-600" },
@@ -29,20 +113,48 @@ const Gamification = () => {
     { action: "Help another student", points: "+50", color: "text-purple-600" },
     { action: "Post in forum", points: "+15", color: "text-orange-600" },
     { action: "Attend workshop", points: "+100", color: "text-pink-600" },
-    { action: "Upload study material", points: "+75", color: "text-indigo-600" }
+    { action: "Upload study material", points: "+75", color: "text-indigo-600" },
   ];
+
+  const points = userPoints?.points ?? 0;
+  const level = userPoints?.current_level ?? 1;
+  const levelBase = 1000;
+  const nextLevelPoints = Math.ceil(points / levelBase + 1) * levelBase;
+  const progressToNext = ((points % levelBase) / levelBase) * 100;
 
   const currentUser = {
     name: "You",
-    points: 1850,
-    level: 8,
-    nextLevelPoints: 2000,
-    rank: 12
+    points,
+    level,
+    nextLevelPoints,
+    rank: userRank ?? 0,
   };
 
-  const progressToNext = (currentUser.points / currentUser.nextLevelPoints) * 100;
+  const leaderboard = (leaderboardData.length ? leaderboardData : [
+    { rank: 1, name: "—", points: 0 },
+    { rank: 2, name: "—", points: 0 },
+    { rank: 3, name: "—", points: 0 },
+    { rank: 4, name: "—", points: 0 },
+    { rank: 5, name: "—", points: 0 },
+  ]).map((item: any) => ({ ...item, avatar: "🏅", badge: "Top Performer" }));
+
+  const canonicalUrl = typeof window !== "undefined" ? `${window.location.origin}/gamification` : "";
+  const ldJson = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: (leaderboardData || []).slice(0, 5).map((u: any, i: number) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: u.name,
+      additionalProperty: [
+        { "@type": "PropertyValue", name: "points", value: u.points }
+      ],
+    })),
+  };
+
 
   return (
+    <>
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">

@@ -20,39 +20,41 @@ import Gamification from "./pages/Gamification";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
-
+import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Navigation />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/onboarding" element={<Onboarding />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/mentors" element={<Mentors />} />
-            <Route path="/workshops" element={<Workshops />} />
-            <Route path="/study-materials" element={<StudyMaterials />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/opportunities" element={<Opportunities />} />
-            <Route path="/impact" element={<Impact />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/ai-tools" element={<AIStudyTools />} />
-            <Route path="/community" element={<CommunityForum />} />
-            <Route path="/gamification" element={<Gamification />} />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+    <HelmetProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Navigation />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/mentors" element={<Mentors />} />
+              <Route path="/workshops" element={<Workshops />} />
+              <Route path="/study-materials" element={<StudyMaterials />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/opportunities" element={<Opportunities />} />
+              <Route path="/impact" element={<Impact />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/ai-tools" element={<AIStudyTools />} />
+              <Route path="/community" element={<CommunityForum />} />
+              <Route path="/gamification" element={<Gamification />} />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </HelmetProvider>
   </QueryClientProvider>
 );
 
