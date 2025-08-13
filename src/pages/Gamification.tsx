@@ -285,6 +285,7 @@ const Gamification = () => {
         </Card>
       </div>
     </div>
+    </>
   );
 };
 
