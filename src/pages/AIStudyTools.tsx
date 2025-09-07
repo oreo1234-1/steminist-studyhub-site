@@ -2,7 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Brain, FileText, MessageCircle, Calendar, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Brain, FileText, MessageCircle, Calendar, Loader2, Crown, Zap, Target, BookOpen, Users, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,25 +18,74 @@ const AIStudyTools = () => {
       title: "AI Flashcard Generator",
       description: "Paste your notes and get instant flashcards",
       icon: <Brain className="h-8 w-8" />,
-      example: "Input: Photosynthesis notes → Output: 10 flashcards with Q&A"
+      example: "Input: Photosynthesis notes → Output: 10 flashcards with Q&A",
+      tier: "free"
     },
     {
       title: "AI Summarizer", 
       description: "Upload text and get summaries with key points",
       icon: <FileText className="h-8 w-8" />,
-      example: "Input: 5-page chapter → Output: 1-page summary + bullet points"
+      example: "Input: 5-page chapter → Output: 1-page summary + bullet points",
+      tier: "free"
     },
     {
       title: "AI STEM Chatbot",
       description: "Ask questions and get STEM-specific answers",
       icon: <MessageCircle className="h-8 w-8" />,
-      example: "Ask: 'Explain Newton's laws' → Get detailed, student-friendly answer"
+      example: "Ask: 'Explain Newton's laws' → Get detailed, student-friendly answer",
+      tier: "free"
     },
     {
       title: "Study Plan Builder",
       description: "Enter exam date and topics for AI-built study schedule",
       icon: <Calendar className="h-8 w-8" />,
-      example: "Input: Chemistry exam in 2 weeks → Output: Daily study plan"
+      example: "Input: Chemistry exam in 2 weeks → Output: Daily study plan",
+      tier: "free"
+    }
+  ];
+
+  const premiumFeatures = [
+    {
+      title: "Advanced Analytics Dashboard",
+      description: "Track your learning progress with detailed insights",
+      icon: <BarChart3 className="h-6 w-6" />,
+      features: ["Study time tracking", "Performance analytics", "Progress reports", "Goal tracking"],
+      tier: "premium"
+    },
+    {
+      title: "Unlimited AI Generations",
+      description: "No limits on flashcards, summaries, or AI interactions",
+      icon: <Zap className="h-6 w-6" />,
+      features: ["Unlimited flashcards", "Unlimited summaries", "Unlimited chatbot usage", "Priority processing"],
+      tier: "premium"
+    },
+    {
+      title: "Personalized Study Paths",
+      description: "AI-powered adaptive learning recommendations",
+      icon: <Target className="h-6 w-6" />,
+      features: ["Personalized curriculum", "Adaptive difficulty", "Smart scheduling", "Learning style analysis"],
+      tier: "premium"
+    },
+    {
+      title: "Expert Study Materials",
+      description: "Access premium STEM resources and expert content",
+      icon: <BookOpen className="h-6 w-6" />,
+      features: ["Premium study guides", "Expert-curated content", "Advanced simulations", "Research paper access"],
+      tier: "premium"
+    },
+    {
+      title: "Private Study Groups",
+      description: "Create and manage exclusive study communities",
+      icon: <Users className="h-6 w-6" />,
+      features: ["Private group creation", "Advanced moderation tools", "Custom challenges", "Group analytics"],
+      tier: "premium"
+    },
+    {
+      title: "1-on-1 AI Tutor",
+      description: "Personal AI tutor for advanced STEM concepts",
+      icon: <Crown className="h-6 w-6" />,
+      features: ["Personalized tutoring", "Advanced problem solving", "Real-time feedback", "Custom learning plans"],
+      tier: "premium"
     }
   ];
 
@@ -187,22 +237,37 @@ const AIStudyTools = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {tools.map((tool, index) => (
-            <Card key={index} className="group hover:shadow-lg transition-all duration-300 bg-card border-2 hover:border-accent">
-              <CardHeader className="text-center pb-4">
-                <div className="mx-auto mb-4 p-4 bg-secondary/20 rounded-full w-fit group-hover:bg-accent/30 transition-colors">
-                  <div className="text-primary">
-                    {tool.icon}
+        {/* Free Tools Section */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <Badge variant="secondary" className="mb-4">Free Tools</Badge>
+            <h2 className="font-playfair text-3xl font-bold text-foreground mb-4">
+              Get Started with AI Study Tools
+            </h2>
+            <p className="text-muted-foreground">
+              Try our core AI-powered study tools completely free
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {tools.map((tool, index) => (
+              <Card key={index} className="group hover:shadow-lg transition-all duration-300 bg-card border-2 hover:border-accent">
+                <CardHeader className="text-center pb-4">
+                  <div className="flex justify-between items-start mb-4">
+                    <Badge variant="outline" className="text-xs">FREE</Badge>
                   </div>
-                </div>
-                <CardTitle className="font-playfair text-xl text-foreground">
-                  {tool.title}
-                </CardTitle>
-                <CardDescription className="text-muted-foreground">
-                  {tool.description}
-                </CardDescription>
-              </CardHeader>
+                  <div className="mx-auto mb-4 p-4 bg-secondary/20 rounded-full w-fit group-hover:bg-accent/30 transition-colors">
+                    <div className="text-primary">
+                      {tool.icon}
+                    </div>
+                  </div>
+                  <CardTitle className="font-playfair text-xl text-foreground">
+                    {tool.title}
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    {tool.description}
+                  </CardDescription>
+                </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-muted/50 p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground font-medium mb-2">Example:</p>
@@ -376,6 +441,88 @@ const AIStudyTools = () => {
               </CardContent>
             </Card>
           ))}
+          </div>
+        </div>
+
+        {/* Premium Features Section */}
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <Badge variant="default" className="mb-4 bg-gradient-to-r from-primary to-accent text-white">
+              <Crown className="h-3 w-3 mr-1" />
+              Premium Features
+            </Badge>
+            <h2 className="font-playfair text-3xl font-bold text-foreground mb-4">
+              Unlock Your Full Potential
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Supercharge your STEM learning with advanced AI features, unlimited access, and personalized guidance
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {premiumFeatures.map((feature, index) => (
+              <Card key={index} className="group hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-card to-secondary/20 border-2 hover:border-primary/30 relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-gradient-to-br from-primary to-accent text-white text-xs px-2 py-1 rounded-bl-lg">
+                  PREMIUM
+                </div>
+                <CardHeader className="pb-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/20 transition-colors">
+                      {feature.icon}
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle className="font-playfair text-lg text-foreground mb-2">
+                        {feature.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm text-muted-foreground">
+                        {feature.description}
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {feature.features.map((item, i) => (
+                      <li key={i} className="flex items-center gap-2 text-sm">
+                        <div className="h-1.5 w-1.5 bg-primary rounded-full"></div>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Pricing CTA */}
+          <div className="mt-12 text-center">
+            <Card className="max-w-md mx-auto bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/20">
+              <CardHeader>
+                <div className="flex justify-center mb-4">
+                  <Crown className="h-12 w-12 text-primary" />
+                </div>
+                <CardTitle className="font-playfair text-2xl text-center">
+                  Upgrade to Premium
+                </CardTitle>
+                <CardDescription className="text-center">
+                  Unlock all features and accelerate your STEM learning journey
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-foreground">$9.99</div>
+                  <div className="text-sm text-muted-foreground">per month</div>
+                </div>
+                <Button className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white">
+                  <Crown className="h-4 w-4 mr-2" />
+                  Upgrade Now
+                </Button>
+                <p className="text-xs text-muted-foreground text-center">
+                  30-day money-back guarantee
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
