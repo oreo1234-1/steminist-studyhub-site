@@ -61,13 +61,18 @@ export default function PomodoroCard() {
       });
       if (error) throw error;
 
-      // Optional: log points to user_activity
-      await supabase.from("user_activity").insert({
-        user_id: user.id,
-        activity_type: mode === "focus" ? "pomodoro_focus" : "pomodoro_break",
-        points_earned: mode === "focus" ? 10 : 0,
-        metadata: { duration },
-      } as any);
+      // Note: Points will be updated via edge functions for security
+      // This is a placeholder for frontend feedback only
+      const pointsEarned = mode === "focus" ? 10 : 0;
+      if (pointsEarned > 0) {
+        // Log the activity for user tracking
+        await supabase.from("user_activity").insert({
+          user_id: user.id,
+          activity_type: mode === "focus" ? "pomodoro_focus" : "pomodoro_break",
+          points_earned: pointsEarned,
+          metadata: { duration },
+        } as any);
+      }
 
       toast({ title: "Session saved", description: `${mode === "focus" ? "Focus" : "Break"} for ${duration} min` });
     } catch (e: any) {

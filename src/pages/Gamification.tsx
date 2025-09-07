@@ -53,10 +53,11 @@ const Gamification = () => {
       const ids = (up || []).map((u) => u.user_id).filter(Boolean) as string[];
       let profilesMap = new Map<string, { full_name: string | null }>();
       if (ids.length) {
-        // Use a direct query since public_profiles_lite is a view
-        const { data: profs } = await supabase
-          .rpc('get_public_profiles', { user_ids: ids });
-        if (profs) {
+        const { data: profs, error: profsError } = await supabase
+          .rpc("get_public_profiles", { user_ids: ids });
+        if (profsError) {
+          console.error("Error fetching profiles:", profsError);
+        } else if (profs) {
           profilesMap = new Map(
             profs.map((p: any) => [p.id as string, { full_name: p.full_name }])
           );

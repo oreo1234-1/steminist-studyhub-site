@@ -789,6 +789,13 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Database["public"]["Enums"]["app_role"]
       }
+      get_public_profiles: {
+        Args: { user_ids: string[] }
+        Returns: {
+          full_name: string
+          id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "student" | "mentor" | "admin"
