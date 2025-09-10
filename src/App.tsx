@@ -20,6 +20,7 @@ import Gamification from "./pages/Gamification";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
+import Premium from "./pages/Premium";
 import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
               <Route path="/ai-tools" element={<AIStudyTools />} />
               <Route path="/community" element={<CommunityForum />} />
               <Route path="/gamification" element={<Gamification />} />
+              <Route path="/premium" element={<Premium />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
