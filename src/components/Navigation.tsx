@@ -22,7 +22,6 @@ const Navigation = () => {
     { path: "/mentors", label: "Mentors" },
     { path: "/workshops", label: "Workshops" },
     { path: "/ai-tools", label: "AI Study Tools" },
-    { path: "/premium", label: "Premium" },
   ];
 
   const resourceItems = [
