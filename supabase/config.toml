@@ -1,1 +1,13 @@
 project_id = "kqhjpgovlqvdiuhyxmsa"
+
+[functions.ai-chatbot]
+verify_jwt = true
+
+[functions.ai-flashcards]
+verify_jwt = true
+
+[functions.ai-summarizer]
+verify_jwt = true
+
+[functions.ai-study-plan]
+verify_jwt = true
