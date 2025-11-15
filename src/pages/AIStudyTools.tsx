@@ -3,13 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Brain, FileText, MessageCircle, Calendar, Loader2 } from "lucide-react";
+import { Brain, FileText, MessageCircle, Calendar, Loader2, Lock } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const AIStudyTools = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState<string | null>(null);
   const [results, setResults] = useState<any>({});
 
@@ -45,6 +49,16 @@ const AIStudyTools = () => {
   ];
 
   const handleFlashcardGeneration = async (notes: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use AI tools",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+
     if (!notes.trim()) {
       toast({
         title: "Error",
@@ -67,10 +81,11 @@ const AIStudyTools = () => {
         title: "Success! ✨",
         description: `Generated ${data.flashcards.length} flashcards from your notes`,
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Flashcard generation error:', error);
       toast({
         title: "Error",
-        description: "Failed to generate flashcards. Please try again.",
+        description: error.message || "Failed to generate flashcards. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -79,6 +94,16 @@ const AIStudyTools = () => {
   };
 
   const handleSummarization = async (text: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use AI tools",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+
     if (!text.trim()) {
       toast({
         title: "Error",
@@ -101,10 +126,11 @@ const AIStudyTools = () => {
         title: "Success! 📝",
         description: "Generated summary of your text",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Summarization error:', error);
       toast({
         title: "Error",
-        description: "Failed to generate summary. Please try again.",
+        description: error.message || "Failed to generate summary. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -113,6 +139,16 @@ const AIStudyTools = () => {
   };
 
   const handleChatbot = async (question: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use AI tools",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+
     if (!question.trim()) {
       toast({
         title: "Error",
@@ -135,10 +171,11 @@ const AIStudyTools = () => {
         title: "Success! 💬",
         description: "Your STEM study buddy has answered your question",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Chatbot error:', error);
       toast({
         title: "Error",
-        description: "Failed to get answer. Please try again.",
+        description: error.message || "Failed to get answer. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -147,6 +184,16 @@ const AIStudyTools = () => {
   };
 
   const handleStudyPlan = async (examDate: string, topics: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use AI tools",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+
     if (!examDate || !topics.trim()) {
       toast({
         title: "Error",
@@ -169,10 +216,11 @@ const AIStudyTools = () => {
         title: "Success! 📅",
         description: "Created your personalized study plan",
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Study plan error:', error);
       toast({
         title: "Error",
-        description: "Failed to create study plan. Please try again.",
+        description: error.message || "Failed to create study plan. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -190,6 +238,14 @@ const AIStudyTools = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Supercharge your STEM learning with AI-powered study tools designed just for you
           </p>
+          {!user && (
+            <div className="mt-6 p-4 bg-muted rounded-lg max-w-md mx-auto flex items-center gap-3">
+              <Lock className="h-5 w-5 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                Sign in to unlock AI-powered study tools
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Free Tools Section */}
