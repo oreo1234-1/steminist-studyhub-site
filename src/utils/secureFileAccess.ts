@@ -12,22 +12,16 @@ export const getSecureFileUrl = async (bucket: string, filePath: string): Promis
       return null;
     }
 
-    const response = await fetch('/api/secure-file-access', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({ bucket, path: filePath }),
+    const { data, error } = await supabase.functions.invoke('secure-file-access', {
+      body: { bucket, path: filePath },
     });
 
-    if (!response.ok) {
-      console.error('Failed to get signed URL:', response.statusText);
+    if (error) {
+      console.error('Failed to get signed URL:', error);
       return null;
     }
 
-    const { signedUrl } = await response.json();
-    return signedUrl;
+    return data.signedUrl;
   } catch (error) {
     console.error('Error getting secure file URL:', error);
     return null;

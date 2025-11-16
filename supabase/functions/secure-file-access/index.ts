@@ -13,9 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const url = new URL(req.url);
-    const bucket = url.searchParams.get('bucket');
-    const filePath = url.searchParams.get('path');
+    const { bucket, path: filePath } = await req.json();
 
     if (!bucket || !filePath) {
       return new Response(

@@ -268,12 +268,34 @@ export function UploadMaterialDialog() {
       return;
     }
 
+    // Validate file type
+    const allowedTypes = ['.pdf', '.doc', '.docx', '.ppt', '.pptx', '.txt', '.jpg', '.jpeg', '.png'];
+    const fileExt = '.' + formData.file.name.split('.').pop()?.toLowerCase();
+    if (!allowedTypes.includes(fileExt)) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please upload a PDF, Word, PowerPoint, text, or image file.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024;
+    if (formData.file.size > maxSize) {
+      toast({
+        title: "File Too Large",
+        description: "Please upload a file smaller than 10MB.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Upload file to storage
-      const fileExt = formData.file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      // Upload file to storage with path only
+      const fileName = `${user.id}/${Date.now()}${fileExt}`;
       
       const { error: uploadError } = await supabase.storage
         .from('study-materials')
@@ -281,19 +303,14 @@ export function UploadMaterialDialog() {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('study-materials')
-        .getPublicUrl(fileName);
-
-      // Create database entry
+      // Create database entry with file path (not public URL)
       const { error: dbError } = await supabase
         .from('study_materials')
         .insert({
           title: formData.title,
           description: formData.description,
-          file_url: publicUrl,
-          file_type: formData.file.type,
+          file_url: fileName,
+          file_type: fileExt.substring(1),
           subject: `${EDUCATION_LEVELS[formData.educationLevel as keyof typeof EDUCATION_LEVELS]} ${formData.educationLevel} - ${formData.category} - ${formData.subject}`,
           difficulty_level: formData.difficultyLevel,
           uploaded_by: user.id,
@@ -316,13 +333,13 @@ export function UploadMaterialDialog() {
         difficultyLevel: "beginner",
         file: null
       });
-      setOpen(false);
 
-    } catch (error: any) {
+      setOpen(false);
+    } catch (error) {
       console.error('Upload error:', error);
       toast({
         title: "Upload Failed",
-        description: error.message || "Failed to upload material. Please try again.",
+        description: "There was an error uploading your material. Please try again.",
         variant: "destructive"
       });
     } finally {
