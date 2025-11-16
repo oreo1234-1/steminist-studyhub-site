@@ -2,8 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Brain, FileText, MessageCircle, Calendar, Loader2, Lock } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Brain, FileText, MessageCircle, Calendar, Loader2, Lock, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
@@ -17,36 +17,11 @@ const AIStudyTools = () => {
   const [loading, setLoading] = useState<string | null>(null);
   const [results, setResults] = useState<any>({});
 
-  const tools = [
-    {
-      title: "AI Flashcard Generator",
-      description: "Paste your notes and get instant flashcards",
-      icon: <Brain className="h-8 w-8" />,
-      example: "Input: Photosynthesis notes → Output: 10 flashcards with Q&A",
-      tier: "free"
-    },
-    {
-      title: "AI Summarizer", 
-      description: "Upload text and get summaries with key points",
-      icon: <FileText className="h-8 w-8" />,
-      example: "Input: 5-page chapter → Output: 1-page summary + bullet points",
-      tier: "free"
-    },
-    {
-      title: "AI STEM Chatbot",
-      description: "Ask questions and get STEM-specific answers",
-      icon: <MessageCircle className="h-8 w-8" />,
-      example: "Ask: 'Explain Newton's laws' → Get detailed, student-friendly answer",
-      tier: "free"
-    },
-    {
-      title: "Study Plan Builder",
-      description: "Enter exam date and topics for AI-built study schedule",
-      icon: <Calendar className="h-8 w-8" />,
-      example: "Input: Chemistry exam in 2 weeks → Output: Daily study plan",
-      tier: "free"
-    }
-  ];
+  const [flashcardNotes, setFlashcardNotes] = useState("");
+  const [summarizerText, setSummarizerText] = useState("");
+  const [chatQuestion, setChatQuestion] = useState("");
+  const [examDate, setExamDate] = useState("");
+  const [studyTopics, setStudyTopics] = useState("");
 
   const handleFlashcardGeneration = async (notes: string) => {
     if (!user) {
@@ -166,10 +141,10 @@ const AIStudyTools = () => {
 
       if (error) throw error;
 
-      setResults(prev => ({ ...prev, chatAnswer: data.answer }));
+      setResults(prev => ({ ...prev, chatResponse: data.answer }));
       toast({
-        title: "Success! 💬",
-        description: "Your STEM study buddy has answered your question",
+        title: "Answer Ready! 💬",
+        description: "Your STEM question has been answered",
       });
     } catch (error: any) {
       console.error('Chatbot error:', error);
@@ -197,7 +172,7 @@ const AIStudyTools = () => {
     if (!examDate || !topics.trim()) {
       toast({
         title: "Error",
-        description: "Please enter both exam date and topics",
+        description: "Please enter exam date and topics",
         variant: "destructive",
       });
       return;
@@ -211,10 +186,10 @@ const AIStudyTools = () => {
 
       if (error) throw error;
 
-      setResults(prev => ({ ...prev, studyPlan: data }));
+      setResults(prev => ({ ...prev, studyPlan: data.plan }));
       toast({
-        title: "Success! 📅",
-        description: "Created your personalized study plan",
+        title: "Study Plan Created! 📅",
+        description: "Your personalized study schedule is ready",
       });
     } catch (error: any) {
       console.error('Study plan error:', error);
@@ -228,233 +203,312 @@ const AIStudyTools = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-12">
-          <h1 className="font-playfair text-4xl md:text-5xl font-bold text-foreground mb-4">
-            AI Study Tools 🤖
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Supercharge your STEM learning with AI-powered study tools designed just for you
-          </p>
-          {!user && (
-            <div className="mt-6 p-4 bg-muted rounded-lg max-w-md mx-auto flex items-center gap-3">
-              <Lock className="h-5 w-5 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                Sign in to unlock AI-powered study tools
-              </p>
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/30 flex items-center justify-center p-8">
+        <Card className="max-w-md w-full border-2">
+          <CardHeader className="text-center space-y-4">
+            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+              <Lock className="h-8 w-8 text-primary" />
             </div>
-          )}
+            <CardTitle className="text-2xl">Authentication Required</CardTitle>
+            <CardDescription>
+              Sign in to access AI-powered study tools and boost your learning
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={() => navigate('/auth')} 
+              className="w-full"
+              size="lg"
+            >
+              Sign In to Continue
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-accent/30 p-4 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <Sparkles className="h-10 w-10 text-primary" />
+            <h1 className="text-4xl md:text-5xl font-bold text-primary font-playfair">
+              AI Study Tools
+            </h1>
+          </div>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Leverage AI to make studying smarter, faster, and more effective
+          </p>
         </div>
 
-        {/* Free Tools Section */}
-        <div className="mb-16">
-          <div className="text-center mb-8">
-            <Badge variant="secondary" className="mb-4">Free Tools</Badge>
-            <h2 className="font-playfair text-3xl font-bold text-foreground mb-4">
-              Get Started with AI Study Tools
-            </h2>
-            <p className="text-muted-foreground">
-              Try our core AI-powered study tools completely free
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {tools.map((tool, index) => (
-              <Card key={index} className="group hover:shadow-lg transition-all duration-300 bg-card border-2 hover:border-accent">
-                <CardHeader className="text-center pb-4">
-                  <div className="flex justify-between items-start mb-4">
-                    <Badge variant="outline" className="text-xs">FREE</Badge>
+        {/* Tabs Interface */}
+        <Tabs defaultValue="flashcards" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto gap-2 bg-card/50 p-2">
+            <TabsTrigger value="flashcards" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Brain className="h-4 w-4" />
+              <span className="hidden sm:inline">Flashcards</span>
+            </TabsTrigger>
+            <TabsTrigger value="summarizer" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Summarizer</span>
+            </TabsTrigger>
+            <TabsTrigger value="chatbot" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <MessageCircle className="h-4 w-4" />
+              <span className="hidden sm:inline">Chatbot</span>
+            </TabsTrigger>
+            <TabsTrigger value="studyplan" className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Calendar className="h-4 w-4" />
+              <span className="hidden sm:inline">Study Plan</span>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Flashcards Tab */}
+          <TabsContent value="flashcards" className="mt-6">
+            <Card className="border-2">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Brain className="h-6 w-6 text-primary" />
                   </div>
-                  <div className="mx-auto mb-4 p-4 bg-secondary/20 rounded-full w-fit group-hover:bg-accent/30 transition-colors">
-                    <div className="text-primary">
-                      {tool.icon}
-                    </div>
+                  <div>
+                    <CardTitle>AI Flashcard Generator</CardTitle>
+                    <CardDescription>
+                      Paste your notes and get instant flashcards for effective memorization
+                    </CardDescription>
                   </div>
-                  <CardTitle className="font-playfair text-xl text-foreground">
-                    {tool.title}
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    {tool.description}
-                  </CardDescription>
-                </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <p className="text-sm text-muted-foreground font-medium mb-2">Example:</p>
-                  <p className="text-sm">{tool.example}</p>
                 </div>
-                
-                {tool.title === "AI Flashcard Generator" && (
-                  <div className="space-y-3">
-                    <Textarea 
-                      id="flashcard-notes"
-                      placeholder="Paste your notes here..."
-                      className="min-h-[100px]"
-                    />
-                    <Button 
-                      className="w-full bg-primary hover:bg-primary/90"
-                      onClick={() => {
-                        const notes = (document.getElementById('flashcard-notes') as HTMLTextAreaElement)?.value;
-                        handleFlashcardGeneration(notes);
-                      }}
-                      disabled={loading === 'flashcards'}
-                    >
-                      {loading === 'flashcards' ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Generating...
-                        </>
-                      ) : (
-                        'Generate Flashcards ✨'
-                      )}
-                    </Button>
-                    {results.flashcards && (
-                      <div className="mt-4 p-4 bg-secondary/20 rounded-lg">
-                        <h4 className="font-semibold mb-2">Generated Flashcards:</h4>
-                        <div className="space-y-2 max-h-40 overflow-y-auto">
-                          {results.flashcards.map((card: any, i: number) => (
-                            <div key={i} className="text-sm border rounded p-2">
-                              <div className="font-medium">Q: {card.question}</div>
-                              <div className="text-muted-foreground">A: {card.answer}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {tool.title === "AI Summarizer" && (
-                  <div className="space-y-3">
-                    <Textarea 
-                      id="summarizer-text"
-                      placeholder="Paste text to summarize..."
-                      className="min-h-[100px]"
-                    />
-                    <Button 
-                      className="w-full bg-primary hover:bg-primary/90"
-                      onClick={() => {
-                        const text = (document.getElementById('summarizer-text') as HTMLTextAreaElement)?.value;
-                        handleSummarization(text);
-                      }}
-                      disabled={loading === 'summarizer'}
-                    >
-                      {loading === 'summarizer' ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Summarizing...
-                        </>
-                      ) : (
-                        'Create Summary 📝'
-                      )}
-                    </Button>
-                    {results.summary && (
-                      <div className="mt-4 p-4 bg-secondary/20 rounded-lg">
-                        <h4 className="font-semibold mb-2">Summary:</h4>
-                        <div className="text-sm whitespace-pre-wrap max-h-40 overflow-y-auto">
-                          {results.summary}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {tool.title === "AI STEM Chatbot" && (
-                  <div className="space-y-3">
-                    <Input 
-                      id="chatbot-question"
-                      placeholder="Ask me anything about STEM..."
-                    />
-                    <Button 
-                      className="w-full bg-primary hover:bg-primary/90"
-                      onClick={() => {
-                        const question = (document.getElementById('chatbot-question') as HTMLInputElement)?.value;
-                        handleChatbot(question);
-                      }}
-                      disabled={loading === 'chatbot'}
-                    >
-                      {loading === 'chatbot' ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Thinking...
-                        </>
-                      ) : (
-                        'Ask Question 💬'
-                      )}
-                    </Button>
-                    {results.chatAnswer && (
-                      <div className="mt-4 p-4 bg-secondary/20 rounded-lg">
-                        <h4 className="font-semibold mb-2">Study Buddy Says:</h4>
-                        <div className="text-sm whitespace-pre-wrap max-h-40 overflow-y-auto">
-                          {results.chatAnswer}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {tool.title === "Study Plan Builder" && (
-                  <div className="space-y-3">
-                    <Input 
-                      id="exam-date"
-                      type="date"
-                      placeholder="Exam date"
-                    />
-                    <Input 
-                      id="study-topics"
-                      placeholder="Enter topics (e.g., Chemistry, Biology)"
-                    />
-                    <Button 
-                      className="w-full bg-primary hover:bg-primary/90"
-                      onClick={() => {
-                        const examDate = (document.getElementById('exam-date') as HTMLInputElement)?.value;
-                        const topics = (document.getElementById('study-topics') as HTMLInputElement)?.value;
-                        handleStudyPlan(examDate, topics);
-                      }}
-                      disabled={loading === 'studyplan'}
-                    >
-                      {loading === 'studyplan' ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Creating Plan...
-                        </>
-                      ) : (
-                        'Build Study Plan 📅'
-                      )}
-                    </Button>
-                    {results.studyPlan && (
-                      <div className="mt-4 p-4 bg-secondary/20 rounded-lg">
-                        <h4 className="font-semibold mb-2">Your Study Plan:</h4>
-                        <div className="text-sm max-h-40 overflow-y-auto">
-                          {results.studyPlan.studyPlan ? (
-                            <div className="space-y-2">
-                              {results.studyPlan.studyPlan.slice(0, 3).map((day: any, i: number) => (
-                                <div key={i} className="border rounded p-2">
-                                  <div className="font-medium">Day {day.day}: {day.topic}</div>
-                                  <div className="text-xs text-muted-foreground">{day.estimatedTime}</div>
-                                </div>
-                              ))}
-                              {results.studyPlan.studyPlan.length > 3 && (
-                                <div className="text-xs text-muted-foreground">
-                                  ... and {results.studyPlan.studyPlan.length - 3} more days
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="whitespace-pre-wrap">{results.studyPlan.rawResponse}</div>
-                          )}
-                        </div>
-                      </div>
-                    )}
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Textarea 
+                  placeholder="Paste your notes here... (e.g., Photosynthesis is the process by which plants...)" 
+                  className="min-h-[200px] resize-none"
+                  value={flashcardNotes}
+                  onChange={(e) => setFlashcardNotes(e.target.value)}
+                />
+                <Button 
+                  onClick={() => handleFlashcardGeneration(flashcardNotes)}
+                  disabled={loading === 'flashcards' || !flashcardNotes.trim()}
+                  className="w-full"
+                  size="lg"
+                >
+                  {loading === 'flashcards' ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Generating Flashcards...
+                    </>
+                  ) : (
+                    <>
+                      <Brain className="mr-2 h-4 w-4" />
+                      Generate Flashcards
+                    </>
+                  )}
+                </Button>
+                {results.flashcards && (
+                  <div className="mt-6 space-y-3">
+                    <h3 className="font-semibold text-lg">Generated Flashcards ({results.flashcards.length})</h3>
+                    <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                      {results.flashcards.map((card: any, idx: number) => (
+                        <Card key={idx} className="bg-muted/50">
+                          <CardContent className="p-4 space-y-2">
+                            <p className="font-semibold text-primary">Q: {card.question}</p>
+                            <p className="text-foreground/80">A: {card.answer}</p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
                   </div>
                 )}
               </CardContent>
             </Card>
-          ))}
-          </div>
-        </div>
+          </TabsContent>
 
+          {/* Summarizer Tab */}
+          <TabsContent value="summarizer" className="mt-6">
+            <Card className="border-2">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <FileText className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>AI Text Summarizer</CardTitle>
+                    <CardDescription>
+                      Upload long text and get concise summaries with key points
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Textarea 
+                  placeholder="Paste text to summarize... (e.g., a chapter from your textbook)" 
+                  className="min-h-[200px] resize-none"
+                  value={summarizerText}
+                  onChange={(e) => setSummarizerText(e.target.value)}
+                />
+                <Button 
+                  onClick={() => handleSummarization(summarizerText)}
+                  disabled={loading === 'summarizer' || !summarizerText.trim()}
+                  className="w-full"
+                  size="lg"
+                >
+                  {loading === 'summarizer' ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Summarizing Text...
+                    </>
+                  ) : (
+                    <>
+                      <FileText className="mr-2 h-4 w-4" />
+                      Summarize Text
+                    </>
+                  )}
+                </Button>
+                {results.summary && (
+                  <Card className="mt-6 bg-muted/50">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Summary</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap leading-relaxed">{results.summary}</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Chatbot Tab */}
+          <TabsContent value="chatbot" className="mt-6">
+            <Card className="border-2">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <MessageCircle className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>AI STEM Chatbot</CardTitle>
+                    <CardDescription>
+                      Ask any STEM question and get detailed, student-friendly answers
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Input 
+                  placeholder="Ask a question... (e.g., Explain Newton's laws of motion)" 
+                  className="text-base"
+                  value={chatQuestion}
+                  onChange={(e) => setChatQuestion(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && chatQuestion.trim() && loading !== 'chatbot') {
+                      handleChatbot(chatQuestion);
+                    }
+                  }}
+                />
+                <Button 
+                  onClick={() => handleChatbot(chatQuestion)}
+                  disabled={loading === 'chatbot' || !chatQuestion.trim()}
+                  className="w-full"
+                  size="lg"
+                >
+                  {loading === 'chatbot' ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Thinking...
+                    </>
+                  ) : (
+                    <>
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Ask Question
+                    </>
+                  )}
+                </Button>
+                {results.chatResponse && (
+                  <Card className="mt-6 bg-muted/50">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Answer</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap leading-relaxed">{results.chatResponse}</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Study Plan Tab */}
+          <TabsContent value="studyplan" className="mt-6">
+            <Card className="border-2">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Calendar className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>Study Plan Builder</CardTitle>
+                    <CardDescription>
+                      Enter your exam date and topics to get a personalized study schedule
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Exam Date</label>
+                  <Input 
+                    type="date"
+                    value={examDate}
+                    onChange={(e) => setExamDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Topics to Study</label>
+                  <Textarea 
+                    placeholder="Enter topics separated by commas... (e.g., Calculus, Physics, Chemistry)"
+                    className="min-h-[120px] resize-none"
+                    value={studyTopics}
+                    onChange={(e) => setStudyTopics(e.target.value)}
+                  />
+                </div>
+                <Button 
+                  onClick={() => handleStudyPlan(examDate, studyTopics)}
+                  disabled={loading === 'studyplan' || !examDate || !studyTopics.trim()}
+                  className="w-full"
+                  size="lg"
+                >
+                  {loading === 'studyplan' ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Creating Study Plan...
+                    </>
+                  ) : (
+                    <>
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Build Study Plan
+                    </>
+                  )}
+                </Button>
+                {results.studyPlan && (
+                  <Card className="mt-6 bg-muted/50">
+                    <CardHeader>
+                      <CardTitle className="text-lg">Your Personalized Study Plan</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="whitespace-pre-wrap leading-relaxed">{results.studyPlan}</p>
+                    </CardContent>
+                  </Card>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
