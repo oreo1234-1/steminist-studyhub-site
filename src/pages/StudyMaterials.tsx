@@ -9,6 +9,8 @@ import { UploadMaterialDialog } from "@/components/study-materials/UploadMateria
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
+import { getStudyMaterialUrl } from "@/utils/secureFileAccess";
+import { toast as sonnerToast } from "sonner";
 
 interface StudyMaterial {
   id: string;
@@ -60,6 +62,14 @@ const StudyMaterials = () => {
     if (!material.file_url) return;
 
     try {
+      // Get signed URL for secure access
+      const signedUrl = await getStudyMaterialUrl(material.file_url);
+      
+      if (!signedUrl) {
+        sonnerToast.error('Unable to access file. Please try again.');
+        return;
+      }
+      
       // Increment download count
       await supabase
         .from('study_materials')
@@ -67,9 +77,10 @@ const StudyMaterials = () => {
         .eq('id', material.id);
 
       // Open file in new tab
-      window.open(material.file_url, '_blank');
+      window.open(signedUrl, '_blank');
     } catch (error) {
       console.error('Download error:', error);
+      sonnerToast.error('Failed to download material.');
     }
   };
 
