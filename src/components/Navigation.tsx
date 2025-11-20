@@ -25,15 +25,18 @@ const Navigation = () => {
   ];
 
   const resourceItems = [
-    { path: "/study-materials", label: "Resource Library" },
+    { path: "/resources", label: "Resource Library" },
+    { path: "/study-materials", label: "Study Materials" },
     { path: "/opportunities", label: "Career Prep" },
     { path: "/ai-tools", label: "AI Study Tools" },
   ];
 
   const communityItems = [
+    { path: "/study-pods", label: "Study Pods" },
     { path: "/events", label: "Community Events" },
     { path: "/community", label: "Forum" },
     { path: "/gamification", label: "Progress" },
+    { path: "/leadership", label: "Leadership" },
     { path: "/impact", label: "Impact Stories" },
     { path: "/about", label: "About Us" },
     { path: "/contact", label: "Contact" },

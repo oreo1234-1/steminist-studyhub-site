@@ -22,6 +22,8 @@ import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
 import StudyPods from "./pages/StudyPods";
 import Events from "./pages/Events";
+import Resources from "./pages/Resources";
+import Leadership from "./pages/Leadership";
 import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
@@ -51,6 +53,8 @@ const App = () => (
               <Route path="/ai-tools" element={<AIStudyTools />} />
               <Route path="/community" element={<CommunityForum />} />
               <Route path="/gamification" element={<Gamification />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/leadership" element={<Leadership />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
