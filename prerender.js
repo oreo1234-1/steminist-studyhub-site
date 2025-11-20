@@ -25,7 +25,9 @@ const routesToPrerender = [
   '/contact',
   '/ai-tools',
   '/community',
-  '/gamification'
+  '/gamification',
+  '/resources',
+  '/leadership'
 ]
 
 ;(async () => {
