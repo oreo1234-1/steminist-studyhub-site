@@ -19,20 +19,22 @@ const Navigation = () => {
   // Group navigation items logically
   const mainNavItems = [
     { path: "/", label: "Home" },
-    { path: "/mentors", label: "Mentors" },
+    { path: "/study-pods", label: "Study Pods" },
     { path: "/workshops", label: "Workshops" },
-    { path: "/ai-tools", label: "AI Study Tools" },
+    { path: "/mentors", label: "Mentorship" },
   ];
 
   const resourceItems = [
-    { path: "/study-materials", label: "Study Materials" },
-    { path: "/opportunities", label: "Opportunities" },
-    { path: "/impact", label: "Impact Stories" },
+    { path: "/study-materials", label: "Resource Library" },
+    { path: "/opportunities", label: "Career Prep" },
+    { path: "/ai-tools", label: "AI Study Tools" },
   ];
 
   const communityItems = [
-    { path: "/community", label: "Community Forum" },
-    { path: "/gamification", label: "Progress & Badges" },
+    { path: "/events", label: "Community Events" },
+    { path: "/community", label: "Forum" },
+    { path: "/gamification", label: "Progress" },
+    { path: "/impact", label: "Impact Stories" },
     { path: "/about", label: "About Us" },
     { path: "/contact", label: "Contact" },
   ];
