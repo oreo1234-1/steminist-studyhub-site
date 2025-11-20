@@ -20,6 +20,8 @@ import Gamification from "./pages/Gamification";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Onboarding from "./pages/Onboarding";
+import StudyPods from "./pages/StudyPods";
+import Events from "./pages/Events";
 import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
@@ -37,9 +39,11 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/study-pods" element={<StudyPods />} />
               <Route path="/mentors" element={<Mentors />} />
               <Route path="/workshops" element={<Workshops />} />
               <Route path="/study-materials" element={<StudyMaterials />} />
+              <Route path="/events" element={<Events />} />
               <Route path="/about" element={<About />} />
               <Route path="/opportunities" element={<Opportunities />} />
               <Route path="/impact" element={<Impact />} />
