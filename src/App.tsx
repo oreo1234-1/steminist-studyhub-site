@@ -24,6 +24,7 @@ import StudyPods from "./pages/StudyPods";
 import Events from "./pages/Events";
 import Resources from "./pages/Resources";
 import Leadership from "./pages/Leadership";
+import Challenges from "./pages/Challenges";
 import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="/gamification" element={<Gamification />} />
               <Route path="/resources" element={<Resources />} />
               <Route path="/leadership" element={<Leadership />} />
+              <Route path="/challenges" element={<Challenges />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>

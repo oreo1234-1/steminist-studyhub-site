@@ -27,7 +27,8 @@ const routesToPrerender = [
   '/community',
   '/gamification',
   '/resources',
-  '/leadership'
+  '/leadership',
+  '/challenges'
 ]
 
 ;(async () => {

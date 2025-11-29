@@ -36,6 +36,7 @@ const Navigation = () => {
     { path: "/events", label: "Community Events" },
     { path: "/community", label: "Forum" },
     { path: "/gamification", label: "Progress" },
+    { path: "/challenges", label: "Challenges" },
     { path: "/leadership", label: "Leadership" },
     { path: "/impact", label: "Impact Stories" },
     { path: "/about", label: "About Us" },
