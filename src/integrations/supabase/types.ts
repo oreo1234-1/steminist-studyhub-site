@@ -76,6 +76,51 @@ export type Database = {
           },
         ]
       }
+      challenge_submissions: {
+        Row: {
+          challenge_id: string
+          challenge_type: string
+          created_at: string
+          description: string
+          file_urls: string[] | null
+          id: string
+          project_links: string[] | null
+          status: string
+          submitted_at: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          challenge_type: string
+          created_at?: string
+          description: string
+          file_urls?: string[] | null
+          id?: string
+          project_links?: string[] | null
+          status?: string
+          submitted_at?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          challenge_type?: string
+          created_at?: string
+          description?: string
+          file_urls?: string[] | null
+          id?: string
+          project_links?: string[] | null
+          status?: string
+          submitted_at?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       forum_comments: {
         Row: {
           author_id: string | null
@@ -522,6 +567,47 @@ export type Database = {
           views_count?: number | null
         }
         Relationships: []
+      }
+      submission_feedback: {
+        Row: {
+          created_at: string
+          feedback_text: string
+          id: string
+          improvements: string[] | null
+          mentor_id: string
+          rating: number | null
+          strengths: string[] | null
+          submission_id: string
+        }
+        Insert: {
+          created_at?: string
+          feedback_text: string
+          id?: string
+          improvements?: string[] | null
+          mentor_id: string
+          rating?: number | null
+          strengths?: string[] | null
+          submission_id: string
+        }
+        Update: {
+          created_at?: string
+          feedback_text?: string
+          id?: string
+          improvements?: string[] | null
+          mentor_id?: string
+          rating?: number | null
+          strengths?: string[] | null
+          submission_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "submission_feedback_submission_id_fkey"
+            columns: ["submission_id"]
+            isOneToOne: false
+            referencedRelation: "challenge_submissions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_activity: {
         Row: {

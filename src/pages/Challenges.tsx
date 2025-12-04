@@ -4,11 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, Calendar, Users, Award, Target, Zap, Code, Palette } from "lucide-react";
+import { Trophy, Calendar, Users, Award, Target, Zap, Code, Palette, FolderOpen } from "lucide-react";
+import { SubmissionPortal } from "@/components/challenges/SubmissionPortal";
+import { MySubmissions } from "@/components/challenges/MySubmissions";
 
 const Challenges = () => {
   const [selectedTab, setSelectedTab] = useState("monthly");
-
   const monthlyChallenges = [
     {
       id: 1,
@@ -276,7 +277,9 @@ const Challenges = () => {
                           <span className="font-semibold text-foreground">{challenge.prize}</span>
                         </div>
                       </div>
-                      <Button className="w-full">Join Challenge</Button>
+                      <SubmissionPortal 
+                        challenge={{ id: challenge.id, title: challenge.title, type: "monthly" }} 
+                      />
                     </CardContent>
                   </Card>
                 ))}
@@ -320,7 +323,9 @@ const Challenges = () => {
                           ))}
                         </div>
                       </div>
-                      <Button className="w-full">Register for Hackathon</Button>
+                      <SubmissionPortal 
+                        challenge={{ id: hackathon.id, title: hackathon.title, type: "hackathon" }} 
+                      />
                     </CardContent>
                   </Card>
                 ))}
@@ -361,13 +366,20 @@ const Challenges = () => {
                           ))}
                         </div>
                       </div>
-                      <Button className="w-full">Submit Entry</Button>
+                      <SubmissionPortal 
+                        challenge={{ id: competition.id, title: competition.title, type: "design" }} 
+                      />
                     </CardContent>
                   </Card>
                 ))}
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* My Submissions Section */}
+          <div className="mb-12">
+            <MySubmissions />
+          </div>
 
           {/* Leaderboard Section */}
           <div className="grid lg:grid-cols-3 gap-8 mb-12">
