@@ -191,7 +191,7 @@ const Auth = () => {
                 <Sparkles className="h-8 w-8 text-primary-foreground" />
               </div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                STEMinist Hub
+                STEMinist Study Hub
               </h1>
             </div>
             
@@ -226,7 +226,7 @@ const Auth = () => {
             <CardHeader className="text-center space-y-2 pb-2">
               <div className="lg:hidden flex items-center justify-center gap-2 mb-2">
                 <Sparkles className="h-6 w-6 text-primary" />
-                <span className="text-xl font-bold text-primary">STEMinist Hub</span>
+                <span className="text-xl font-bold text-primary">STEMinist Study Hub</span>
               </div>
               <CardTitle className="text-2xl font-bold">Join Our Community</CardTitle>
               <CardDescription>
