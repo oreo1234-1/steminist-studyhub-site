@@ -15,16 +15,27 @@ import { toast } from 'sonner';
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showPasswordUpdate, setShowPasswordUpdate] = useState(false);
+  const [showVerificationReminder, setShowVerificationReminder] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check if user arrived via password reset link
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get('type');
+    if (type === 'recovery') {
+      setShowPasswordUpdate(true);
+    }
+
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session) {
+      if (session && !showPasswordUpdate) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('portfolio_data')
@@ -40,7 +51,9 @@ const Auth = () => {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      if (event === 'PASSWORD_RECOVERY') {
+        setShowPasswordUpdate(true);
+      } else if (event === 'SIGNED_IN' && session && !showPasswordUpdate) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('portfolio_data')
@@ -56,16 +69,17 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, showPasswordUpdate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setMessage('');
+    setShowVerificationReminder(false);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -73,11 +87,88 @@ const Auth = () => {
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
           setError('Invalid email or password. Please check your credentials and try again.');
+        } else if (error.message.includes('Email not confirmed')) {
+          setUnverifiedEmail(email);
+          setShowVerificationReminder(true);
+          setError('Please verify your email before signing in.');
         } else {
           setError(error.message);
         }
+      } else if (data.user && !data.user.email_confirmed_at) {
+        setUnverifiedEmail(email);
+        setShowVerificationReminder(true);
+        setError('Please verify your email before signing in.');
+        await supabase.auth.signOut();
       } else {
         toast.success('Welcome back!');
+      }
+    } catch (err: any) {
+      setError('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: unverifiedEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+        }
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setMessage('Verification email sent! Please check your inbox.');
+        toast.success('Verification email sent!');
+      }
+    } catch (err: any) {
+      setError('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    setMessage('');
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: password
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        toast.success('Password updated successfully!');
+        setShowPasswordUpdate(false);
+        setPassword('');
+        setConfirmPassword('');
+        // Clear the hash from URL
+        window.history.replaceState(null, '', window.location.pathname);
+        navigate('/');
       }
     } catch (err: any) {
       setError('An unexpected error occurred');
@@ -274,7 +365,82 @@ const Auth = () => {
                 </Alert>
               )}
 
-              {showForgotPassword ? (
+              {/* Email Verification Reminder */}
+              {showVerificationReminder && (
+                <Alert className="border-amber-500/50 bg-amber-500/10">
+                  <Mail className="h-4 w-4 text-amber-600" />
+                  <AlertDescription className="text-amber-700 dark:text-amber-400">
+                    <div className="space-y-2">
+                      <p>Your email hasn't been verified yet. Please check your inbox for the verification link.</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleResendVerification}
+                        disabled={loading}
+                        className="border-amber-500/50 hover:bg-amber-500/10"
+                      >
+                        {loading ? 'Sending...' : 'Resend verification email'}
+                      </Button>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {showPasswordUpdate ? (
+                /* Password Update Form */
+                <div className="space-y-4">
+                  <div className="text-center space-y-2">
+                    <h3 className="text-lg font-semibold">Set your new password</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Please enter your new password below.
+                    </p>
+                  </div>
+
+                  <form onSubmit={handlePasswordUpdate} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="new-password">New Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="new-password"
+                          type="password"
+                          placeholder="••••••••"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="pl-10 h-11"
+                          required
+                          disabled={loading}
+                          minLength={6}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirm-password">Confirm Password</Label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id="confirm-password"
+                          type="password"
+                          placeholder="••••••••"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          className="pl-10 h-11"
+                          required
+                          disabled={loading}
+                          minLength={6}
+                        />
+                      </div>
+                    </div>
+                    <Button 
+                      type="submit" 
+                      className="w-full h-11 text-base font-medium"
+                      disabled={loading}
+                    >
+                      {loading ? 'Updating...' : 'Update Password'}
+                    </Button>
+                  </form>
+                </div>
+              ) : showForgotPassword ? (
                 /* Forgot Password Form */
                 <div className="space-y-4">
                   <button
