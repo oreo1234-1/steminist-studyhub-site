@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { AlertCircle, Sparkles, Mail, Lock, User, Github, ArrowLeft } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
@@ -24,6 +25,7 @@ const Auth = () => {
   const [showPasswordUpdate, setShowPasswordUpdate] = useState(false);
   const [showVerificationReminder, setShowVerificationReminder] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -575,6 +577,32 @@ const Auth = () => {
                             />
                           </div>
                         </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="remember-me"
+                              checked={rememberMe}
+                              onCheckedChange={(checked) => setRememberMe(checked === true)}
+                            />
+                            <Label
+                              htmlFor="remember-me"
+                              className="text-sm font-normal text-muted-foreground cursor-pointer"
+                            >
+                              Remember me
+                            </Label>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowForgotPassword(true);
+                              setError('');
+                              setMessage('');
+                            }}
+                            className="text-sm text-primary hover:underline"
+                          >
+                            Forgot password?
+                          </button>
+                        </div>
                         <Button 
                           type="submit" 
                           className="w-full h-11 text-base font-medium"
@@ -582,17 +610,6 @@ const Auth = () => {
                         >
                           {loading ? 'Signing in...' : 'Sign In'}
                         </Button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowForgotPassword(true);
-                            setError('');
-                            setMessage('');
-                          }}
-                          className="w-full text-sm text-primary hover:underline"
-                        >
-                          Forgot your password?
-                        </button>
                       </form>
                     </TabsContent>
 
