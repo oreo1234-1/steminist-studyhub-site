@@ -2,89 +2,91 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* STEMinist Study Hub — Academic, Empowering, Community-Driven
+   Palette: Deep teal primary, warm coral accent, soft sage secondary, clean neutrals
+   All colors HSL.
 */
 
 @layer base {
   :root {
-    /* STEMinist Study Hub Design System - Pink/Lavender & Dark Green */
-    --background: 315 65% 95%; /* Soft Pink/Lavender Background */
-    --foreground: 140 100% 20%; /* Dark Green Text */
+    /* Core palette — confident teal + warm coral */
+    --background: 210 20% 98%;
+    --foreground: 210 25% 12%;
 
-    --card: 315 45% 98%;
-    --card-foreground: 140 100% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 25% 12%;
 
-    --popover: 315 45% 98%;
-    --popover-foreground: 140 100% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 25% 12%;
 
-    --primary: 140 100% 20%; /* Dark Green Primary */
-    --primary-foreground: 315 65% 95%;
+    --primary: 174 60% 28%;          /* Deep teal — academic & confident */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 315 60% 85%; /* Medium Pink/Lavender */
-    --secondary-foreground: 140 100% 20%;
+    --secondary: 150 20% 92%;        /* Soft sage */
+    --secondary-foreground: 174 60% 25%;
 
-    --muted: 315 40% 92%; /* Light Pink/Lavender */
-    --muted-foreground: 140 60% 30%;
+    --muted: 210 15% 95%;
+    --muted-foreground: 210 10% 45%;
 
-    --accent: 315 70% 80%; /* Vibrant Pink/Lavender */
-    --accent-foreground: 140 100% 20%;
+    --accent: 4 70% 58%;             /* Warm coral — empowering */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 315 30% 85%;
-    --input: 315 30% 90%;
-    --ring: 140 100% 20%;
+    --border: 210 15% 90%;
+    --input: 210 15% 92%;
+    --ring: 174 60% 28%;
 
-    --radius: 0.75rem;
+    --radius: 0.625rem;
 
-    --sidebar-background: 315 45% 98%;
-    --sidebar-foreground: 140 100% 20%;
-    --sidebar-primary: 140 100% 20%;
-    --sidebar-primary-foreground: 315 65% 95%;
-    --sidebar-accent: 315 60% 85%;
-    --sidebar-accent-foreground: 140 100% 20%;
-    --sidebar-border: 315 30% 85%;
-    --sidebar-ring: 140 100% 20%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 25% 12%;
+    --sidebar-primary: 174 60% 28%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 150 20% 92%;
+    --sidebar-accent-foreground: 174 60% 25%;
+    --sidebar-border: 210 15% 90%;
+    --sidebar-ring: 174 60% 28%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 210 25% 7%;
+    --foreground: 210 15% 93%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 210 25% 10%;
+    --card-foreground: 210 15% 93%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 210 25% 10%;
+    --popover-foreground: 210 15% 93%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 174 55% 45%;
+    --primary-foreground: 210 25% 7%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 174 20% 15%;
+    --secondary-foreground: 174 55% 55%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 210 20% 14%;
+    --muted-foreground: 210 10% 55%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 4 65% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 210 20% 18%;
+    --input: 210 20% 18%;
+    --ring: 174 55% 45%;
+
+    --sidebar-background: 210 25% 9%;
+    --sidebar-foreground: 210 15% 93%;
+    --sidebar-primary: 174 55% 45%;
+    --sidebar-primary-foreground: 210 25% 7%;
+    --sidebar-accent: 174 20% 15%;
+    --sidebar-accent-foreground: 174 55% 55%;
+    --sidebar-border: 210 20% 18%;
+    --sidebar-ring: 174 55% 45%;
   }
 }
 
@@ -94,6 +96,12 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
 }

@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { LogOut, User, Heart, Menu, X, ChevronDown } from "lucide-react";
+import { LogOut, User, Menu, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -16,30 +16,28 @@ const Navigation = () => {
   const { user, signOut } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Group navigation items logically
   const mainNavItems = [
-    { path: "/", label: "Home" },
+    { path: "/features", label: "Features" },
     { path: "/study-pods", label: "Study Pods" },
-    { path: "/workshops", label: "Workshops" },
     { path: "/mentors", label: "Mentorship" },
   ];
 
   const resourceItems = [
     { path: "/resources", label: "Resource Library" },
     { path: "/study-materials", label: "Study Materials" },
-    { path: "/opportunities", label: "Career Prep" },
     { path: "/ai-tools", label: "AI Study Tools" },
+    { path: "/workshops", label: "Workshops" },
+    { path: "/opportunities", label: "Career Prep" },
   ];
 
   const communityItems = [
-    { path: "/study-pods", label: "Study Pods" },
-    { path: "/events", label: "Community Events" },
+    { path: "/events", label: "Events" },
     { path: "/community", label: "Forum" },
-    { path: "/gamification", label: "Progress" },
     { path: "/challenges", label: "Challenges" },
+    { path: "/gamification", label: "Progress" },
     { path: "/leadership", label: "Leadership" },
-    { path: "/impact", label: "Impact Stories" },
-    { path: "/about", label: "About Us" },
+    { path: "/impact", label: "Impact" },
+    { path: "/about", label: "About" },
     { path: "/contact", label: "Contact" },
   ];
 
@@ -49,75 +47,47 @@ const Navigation = () => {
 
   const isActivePath = (path: string) => location.pathname === path;
 
-  const MobileNavItems = ({ items }: { items: typeof mainNavItems }) => (
-    <>
-      {items.map((item) => (
-        <Link
-          key={item.path}
-          to={item.path}
-          className={`block px-4 py-3 text-lg font-medium rounded-lg transition-colors ${
-            isActivePath(item.path)
-              ? "bg-accent text-white"
-              : "text-primary hover:bg-accent/10"
-          }`}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          {item.label}
-        </Link>
-      ))}
-    </>
-  );
-
   return (
-    <nav className="bg-primary text-primary-foreground shadow-elegant border-b border-primary/20">
+    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between py-3">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 flex-shrink-0">
-            <img 
-              src="/lovable-uploads/8f8193e3-0898-424f-8592-ce16830b43ed.png" 
-              alt="STEMinist Study Hub Logo" 
-              className="h-10 w-auto"
+          <Link to="/" className="flex items-center gap-2.5 shrink-0">
+            <img
+              src="/lovable-uploads/8f8193e3-0898-424f-8592-ce16830b43ed.png"
+              alt="STEMinist Study Hub Logo"
+              className="h-8 w-auto"
             />
-            <span className="font-playfair text-xl font-bold hidden sm:block">
-              STEMinist Study Hub
+            <span className="font-playfair text-lg font-bold text-foreground hidden sm:block">
+              STEMinist
             </span>
           </Link>
-          
+
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center space-x-1">
-            {/* Main nav items */}
+          <div className="hidden lg:flex items-center gap-1">
             {mainNavItems.map((item) => (
-              <Button
+              <Link
                 key={item.path}
-                asChild
-                variant={isActivePath(item.path) ? "secondary" : "ghost"}
-                className={
-                  isActivePath(item.path) 
-                    ? "bg-accent text-white hover:bg-accent/90" 
-                    : "text-primary-foreground hover:bg-accent/20"
-                }
+                to={item.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActivePath(item.path)
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
               >
-                <Link to={item.path}>{item.label}</Link>
-              </Button>
+                {item.label}
+              </Link>
             ))}
-            
+
             {/* Resources Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="text-primary-foreground hover:bg-accent/20"
-                >
-                  Resources <ChevronDown className="ml-1 h-4 w-4" />
-                </Button>
+              <DropdownMenuTrigger className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors outline-none">
+                Resources <ChevronDown className="h-3.5 w-3.5" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent align="start" className="w-48">
                 {resourceItems.map((item) => (
                   <DropdownMenuItem key={item.path} asChild>
-                    <Link to={item.path} className="w-full">
-                      {item.label}
-                    </Link>
+                    <Link to={item.path} className="w-full">{item.label}</Link>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -125,125 +95,92 @@ const Navigation = () => {
 
             {/* Community Dropdown */}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="text-primary-foreground hover:bg-accent/20"
-                >
-                  Community <ChevronDown className="ml-1 h-4 w-4" />
-                </Button>
+              <DropdownMenuTrigger className="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors outline-none">
+                Community <ChevronDown className="h-3.5 w-3.5" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56">
+              <DropdownMenuContent align="start" className="w-48">
                 {communityItems.map((item) => (
                   <DropdownMenuItem key={item.path} asChild>
-                    <Link to={item.path} className="w-full">
-                      {item.label}
-                    </Link>
+                    <Link to={item.path} className="w-full">{item.label}</Link>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
 
-          {/* User Actions */}
+          {/* Right Actions */}
           <div className="flex items-center gap-2">
             {user ? (
               <div className="hidden md:flex items-center gap-2">
-                <Button
-                  asChild
-                  variant="ghost"
-                  className="text-primary-foreground hover:bg-accent/20"
-                >
+                <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                   <Link to="/dashboard">
-                    <User className="h-4 w-4 mr-1" />
+                    <User className="h-4 w-4 mr-1.5" />
                     Dashboard
                   </Link>
                 </Button>
-                <Button
-                  onClick={handleSignOut}
-                  variant="ghost" 
-                  size="sm"
-                  className="text-primary-foreground hover:bg-accent/20"
-                >
+                <Button onClick={handleSignOut} variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                   <LogOut className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
-              <Button
-                asChild
-                variant="secondary"
-                className="hidden md:flex bg-accent hover:bg-accent/90 text-white"
-              >
-                <Link to="/auth">Join Us! 💖</Link>
-              </Button>
+              <div className="hidden md:flex items-center gap-2">
+                <Button asChild variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+                  <Link to="/auth">Sign in</Link>
+                </Button>
+                <Button asChild size="sm" className="shadow-sm">
+                  <Link to="/auth">Join the Hub</Link>
+                </Button>
+              </div>
             )}
 
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="lg:hidden text-primary-foreground">
+                <Button variant="ghost" size="icon" className="lg:hidden text-muted-foreground">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80 bg-background">
+              <SheetContent side="right" className="w-80">
                 <div className="flex flex-col gap-6 pt-6">
-                  <div className="flex items-center gap-2 pb-4 border-b">
-                    <Heart className="h-6 w-6 text-accent" />
-                    <span className="font-playfair text-lg font-bold text-primary">
-                      STEMinist Study Hub
-                    </span>
-                  </div>
+                  <Link
+                    to="/"
+                    className="flex items-center gap-2 pb-4 border-b border-border"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <img
+                      src="/lovable-uploads/8f8193e3-0898-424f-8592-ce16830b43ed.png"
+                      alt="Logo"
+                      className="h-7 w-auto"
+                    />
+                    <span className="font-playfair font-bold text-foreground">STEMinist Study Hub</span>
+                  </Link>
 
-                  {/* Main Navigation */}
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-primary mb-3">Main</h3>
-                    <MobileNavItems items={mainNavItems} />
-                  </div>
+                  <NavGroup title="Main" items={mainNavItems} isActive={isActivePath} onClose={() => setIsMobileMenuOpen(false)} />
+                  <NavGroup title="Resources" items={resourceItems} isActive={isActivePath} onClose={() => setIsMobileMenuOpen(false)} />
+                  <NavGroup title="Community" items={communityItems} isActive={isActivePath} onClose={() => setIsMobileMenuOpen(false)} />
 
-                  {/* Resources */}
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-primary mb-3">Resources</h3>
-                    <MobileNavItems items={resourceItems} />
-                  </div>
-
-                  {/* Community */}
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-primary mb-3">Community</h3>
-                    <MobileNavItems items={communityItems} />
-                  </div>
-
-                  {/* User Actions Mobile */}
-                  <div className="pt-4 border-t space-y-3">
+                  <div className="pt-4 border-t border-border space-y-3">
                     {user ? (
                       <>
-                        <Link
-                          to="/dashboard"
-                          className="flex items-center gap-2 px-4 py-3 text-lg font-medium rounded-lg bg-accent text-white"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <User className="h-5 w-5" />
-                          Dashboard
-                        </Link>
+                        <Button asChild className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                          <Link to="/dashboard">
+                            <User className="h-4 w-4 mr-2" />
+                            Dashboard
+                          </Link>
+                        </Button>
                         <Button
-                          onClick={() => {
-                            handleSignOut();
-                            setIsMobileMenuOpen(false);
-                          }}
+                          onClick={() => { handleSignOut(); setIsMobileMenuOpen(false); }}
                           variant="outline"
-                          className="w-full justify-start"
+                          className="w-full"
                         >
                           <LogOut className="h-4 w-4 mr-2" />
                           Sign Out
                         </Button>
                       </>
                     ) : (
-                      <Link
-                        to="/auth"
-                        className="block px-4 py-3 text-lg font-medium rounded-lg bg-accent text-white text-center"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                      >
-                        Join Us! 💖
-                      </Link>
+                      <Button asChild className="w-full" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Link to="/auth">Join the Hub</Link>
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -255,5 +192,32 @@ const Navigation = () => {
     </nav>
   );
 };
+
+function NavGroup({ title, items, isActive, onClose }: {
+  title: string;
+  items: { path: string; label: string }[];
+  isActive: (path: string) => boolean;
+  onClose: () => void;
+}) {
+  return (
+    <div className="space-y-1">
+      <p className="text-xs font-medium tracking-widest uppercase text-muted-foreground mb-2">{title}</p>
+      {items.map((item) => (
+        <Link
+          key={item.path}
+          to={item.path}
+          className={`block px-3 py-2 rounded-md text-sm transition-colors ${
+            isActive(item.path)
+              ? "text-primary bg-primary/10 font-medium"
+              : "text-foreground hover:bg-muted"
+          }`}
+          onClick={onClose}
+        >
+          {item.label}
+        </Link>
+      ))}
+    </div>
+  );
+}
 
 export default Navigation;

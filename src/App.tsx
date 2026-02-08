@@ -6,6 +6,7 @@ import { Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";
 import { AuthProvider } from "./hooks/useAuth";
 import Home from "./pages/Home";
+import Features from "./pages/Features";
 import Mentors from "./pages/Mentors";
 import Workshops from "./pages/Workshops";
 import StudyMaterials from "./pages/StudyMaterials";
@@ -39,6 +40,7 @@ const App = () => (
             <Navigation />
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/features" element={<Features />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/dashboard" element={<Dashboard />} />

@@ -18,10 +18,10 @@ export default {
 			}
 		},
 		extend: {
-			fontFamily: {
-				'playfair': ['Playfair Display', 'serif'],
-				'inter': ['Inter', 'sans-serif'],
-			},
+		fontFamily: {
+			'playfair': ['"DM Serif Display"', 'Georgia', 'serif'],
+			'inter': ['"DM Sans"', 'system-ui', 'sans-serif'],
+		},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
