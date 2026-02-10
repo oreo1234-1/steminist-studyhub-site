@@ -1,114 +1,165 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, Calendar, BookOpen, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { Users, BookOpen, Plus, Search, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const StudyPods = () => {
-  const [levelFilter, setLevelFilter] = useState<string>("all");
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [subjectFilter, setSubjectFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newPod, setNewPod] = useState({ name: "", subject: "", description: "" });
 
-  const studyPods = [
-    {
-      name: "Algebra 1 Study Group",
-      subject: "Mathematics",
-      level: "Middle School (6-8)",
-      members: 8,
-      maxMembers: 12,
-      schedule: "Tuesdays & Thursdays, 4:00 PM",
-      description: "Master algebraic concepts with collaborative problem-solving and peer support.",
-      topics: ["Linear Equations", "Polynomials", "Factoring"]
-    },
-    {
-      name: "Biology Lab Partners",
-      subject: "Science",
-      level: "High School (9-12)",
-      members: 6,
-      maxMembers: 10,
-      schedule: "Mondays & Wednesdays, 5:30 PM",
-      description: "Dive deep into cellular biology, genetics, and lab techniques together.",
-      topics: ["Cell Biology", "Genetics", "Lab Skills"]
-    },
-    {
-      name: "Python Programming Circle",
-      subject: "Technology",
-      level: "High School (9-12)",
-      members: 10,
-      maxMembers: 15,
-      schedule: "Saturdays, 2:00 PM",
-      description: "Learn Python from scratch through coding challenges and group projects.",
-      topics: ["Python Basics", "Data Structures", "Projects"]
-    },
-    {
-      name: "Calculus BC Support Squad",
-      subject: "Mathematics",
-      level: "High School (9-12)",
-      members: 7,
-      maxMembers: 10,
-      schedule: "Sundays, 3:00 PM",
-      description: "Conquer AP Calculus BC with practice problems and concept reviews.",
-      topics: ["Derivatives", "Integrals", "Series"]
-    },
-    {
-      name: "Chemistry Problem Solvers",
-      subject: "Science",
-      level: "High School (9-12)",
-      members: 9,
-      maxMembers: 12,
-      schedule: "Fridays, 4:00 PM",
-      description: "Work through chemistry concepts, stoichiometry, and lab techniques.",
-      topics: ["Chemical Reactions", "Stoichiometry", "Lab Safety"]
-    },
-    {
-      name: "College Physics Study Pod",
-      subject: "Science",
-      level: "College (Undergrad)",
-      members: 5,
-      maxMembers: 8,
-      schedule: "Wednesdays & Fridays, 6:00 PM",
-      description: "Tackle university-level physics with collaborative problem-solving.",
-      topics: ["Mechanics", "Thermodynamics", "Electricity"]
-    },
-    {
-      name: "Discrete Math Study Circle",
-      subject: "Mathematics",
-      level: "College (Undergrad)",
-      members: 6,
-      maxMembers: 10,
-      schedule: "Tuesdays, 7:00 PM",
-      description: "Master logic, proofs, and discrete structures for computer science.",
-      topics: ["Logic", "Proofs", "Graph Theory"]
-    },
-    {
-      name: "Data Structures & Algorithms",
-      subject: "Technology",
-      level: "College (Undergrad)",
-      members: 8,
-      maxMembers: 12,
-      schedule: "Thursdays, 5:00 PM",
-      description: "Prepare for technical interviews and master CS fundamentals together.",
-      topics: ["Arrays & Lists", "Trees & Graphs", "Algorithms"]
-    }
-  ];
+  // Fetch study groups
+  const { data: groups = [], isLoading } = useQuery({
+    queryKey: ["studyGroups"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("study_groups")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
 
-  const filteredPods = studyPods.filter(pod => {
-    const matchesLevel = levelFilter === "all" || pod.level === levelFilter;
-    const matchesSubject = subjectFilter === "all" || pod.subject === subjectFilter;
-    return matchesLevel && matchesSubject;
+      // Fetch member counts
+      const groupIds = (data || []).map(g => g.id);
+      const memberCounts = new Map<string, number>();
+      if (groupIds.length) {
+        const { data: members } = await supabase
+          .from("group_members")
+          .select("group_id");
+        if (members) {
+          members.forEach(m => {
+            memberCounts.set(m.group_id, (memberCounts.get(m.group_id) || 0) + 1);
+          });
+        }
+      }
+
+      return (data || []).map(g => ({
+        ...g,
+        member_count: memberCounts.get(g.id) || 0,
+      }));
+    },
   });
+
+  // Fetch user's memberships
+  const { data: userMemberships = [] } = useQuery({
+    queryKey: ["userMemberships", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from("group_members")
+        .select("group_id")
+        .eq("user_id", user.id);
+      if (error) throw error;
+      return (data || []).map(m => m.group_id);
+    },
+    enabled: !!user,
+  });
+
+  // Create group mutation
+  const createGroup = useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Not authenticated");
+      const { data, error } = await supabase.from("study_groups").insert({
+        name: newPod.name,
+        subject: newPod.subject || null,
+        description: newPod.description || null,
+        owner_id: user.id,
+        is_public: true,
+      }).select().single();
+      if (error) throw error;
+
+      // Auto-join as owner
+      await supabase.from("group_members").insert({
+        group_id: data.id,
+        user_id: user.id,
+        role: "owner",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["studyGroups"] });
+      queryClient.invalidateQueries({ queryKey: ["userMemberships"] });
+      setCreateOpen(false);
+      setNewPod({ name: "", subject: "", description: "" });
+      toast({ title: "Study Pod created! 🎉" });
+    },
+    onError: (e: any) => {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    },
+  });
+
+  // Join group mutation
+  const joinGroup = useMutation({
+    mutationFn: async (groupId: string) => {
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase.from("group_members").insert({
+        group_id: groupId,
+        user_id: user.id,
+        role: "member",
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["studyGroups"] });
+      queryClient.invalidateQueries({ queryKey: ["userMemberships"] });
+      toast({ title: "Joined the pod! 🎉" });
+    },
+    onError: (e: any) => {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    },
+  });
+
+  // Leave group mutation
+  const leaveGroup = useMutation({
+    mutationFn: async (groupId: string) => {
+      if (!user) throw new Error("Not authenticated");
+      const { error } = await supabase
+        .from("group_members")
+        .delete()
+        .eq("group_id", groupId)
+        .eq("user_id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["studyGroups"] });
+      queryClient.invalidateQueries({ queryKey: ["userMemberships"] });
+      toast({ title: "Left the pod" });
+    },
+  });
+
+  const filteredGroups = groups.filter(g => {
+    const matchesSubject = subjectFilter === "all" || g.subject === subjectFilter;
+    const matchesSearch = !searchQuery || 
+      g.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (g.subject || "").toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSubject && matchesSearch;
+  });
+
+  const subjects = [...new Set(groups.map(g => g.subject).filter(Boolean))].sort();
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <div className="text-center mb-12">
           <h1 className="font-playfair text-4xl md:text-5xl font-bold text-foreground mb-4">
             Study Pods 👥
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6">
-            Join small-group study sessions for core STEM subjects from middle school to college. 
+            Join small-group study sessions for core STEM subjects.
             Collaborate, learn, and grow together with fellow STEM sisters!
           </p>
         </div>
@@ -123,121 +174,163 @@ const StudyPods = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Education Level</label>
-                <Select value={levelFilter} onValueChange={setLevelFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="Middle School (6-8)">Middle School (6-8)</SelectItem>
-                    <SelectItem value="High School (9-12)">High School (9-12)</SelectItem>
-                    <SelectItem value="College (Undergrad)">College (Undergrad)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Subject Area</label>
-                <Select value={subjectFilter} onValueChange={setSubjectFilter}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select subject" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Subjects</SelectItem>
-                    <SelectItem value="Science">Science</SelectItem>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                    <SelectItem value="Engineering">Engineering</SelectItem>
-                    <SelectItem value="Mathematics">Mathematics</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Input
+                placeholder="Search pods..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <Select value={subjectFilter} onValueChange={setSubjectFilter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select subject" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Subjects</SelectItem>
+                  {subjects.map(s => (
+                    <SelectItem key={s} value={s!}>{s}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            {(levelFilter !== "all" || subjectFilter !== "all") && (
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setLevelFilter("all");
-                  setSubjectFilter("all");
-                }}
-              >
-                Clear Filters
-              </Button>
-            )}
           </CardContent>
         </Card>
 
-        {/* Study Pods Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {filteredPods.map((pod, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow border-2 hover:border-primary/30">
-              <CardHeader>
-                <div className="flex items-start justify-between mb-2">
-                  <Badge variant="secondary">{pod.level}</Badge>
-                  <Badge variant="outline">{pod.members}/{pod.maxMembers} members</Badge>
-                </div>
-                <CardTitle className="font-playfair text-xl">{pod.name}</CardTitle>
-                <CardDescription className="flex items-center gap-2 text-sm">
-                  <BookOpen className="h-4 w-4" />
-                  {pod.subject}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">{pod.description}</p>
-                
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <span>{pod.schedule}</span>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Topics Covered:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {pod.topics.map((topic, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
-                        {topic}
+        {/* Groups Grid */}
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {filteredGroups.map((group) => {
+              const isMember = userMemberships.includes(group.id);
+              const isOwner = group.owner_id === user?.id;
+              return (
+                <Card key={group.id} className="hover:shadow-lg transition-shadow border-2 hover:border-primary/30">
+                  <CardHeader>
+                    <div className="flex items-start justify-between mb-2">
+                      {group.subject && <Badge variant="secondary">{group.subject}</Badge>}
+                      <Badge variant="outline">
+                        <Users className="h-3 w-3 mr-1" />
+                        {group.member_count} members
                       </Badge>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                    <CardTitle className="font-playfair text-xl">{group.name}</CardTitle>
+                    {group.description && (
+                      <CardDescription>{group.description}</CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    {isOwner ? (
+                      <Badge className="w-full justify-center py-2">You own this pod</Badge>
+                    ) : isMember ? (
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => leaveGroup.mutate(group.id)}
+                        disabled={leaveGroup.isPending}
+                      >
+                        Leave Pod
+                      </Button>
+                    ) : (
+                      <Button
+                        className="w-full"
+                        onClick={() => {
+                          if (!user) {
+                            toast({ title: "Sign in to join", variant: "destructive" });
+                            navigate("/auth");
+                            return;
+                          }
+                          joinGroup.mutate(group.id);
+                        }}
+                        disabled={joinGroup.isPending}
+                      >
+                        <Users className="h-4 w-4 mr-2" />
+                        Join Pod
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
 
-                <Button className="w-full bg-primary hover:bg-primary/90">
-                  <Users className="h-4 w-4 mr-2" />
-                  Join Pod
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {filteredPods.length === 0 && (
-          <Card className="p-8 text-center">
-            <p className="text-muted-foreground mb-4">No study pods match your filters.</p>
-            <Button 
-              variant="outline" 
-              onClick={() => {
-                setLevelFilter("all");
-                setSubjectFilter("all");
-              }}
-            >
-              Clear Filters
-            </Button>
+        {!isLoading && filteredGroups.length === 0 && (
+          <Card className="p-8 text-center mb-8">
+            <p className="text-muted-foreground">No study pods found. Create one below!</p>
           </Card>
         )}
 
-        {/* Create Your Own Pod */}
+        {/* Create Pod */}
         <Card className="border-2 border-accent/30 bg-accent/5">
           <CardHeader>
             <CardTitle className="font-playfair text-2xl">Create Your Own Study Pod</CardTitle>
             <CardDescription>
-              Don't see what you're looking for? Start your own study pod and invite others to join!
+              Start your own study pod and invite others to join!
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button size="lg" className="bg-accent hover:bg-accent/90">
-              <Plus className="h-5 w-5 mr-2" />
-              Create New Pod
-            </Button>
+            <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  size="lg"
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "Sign in to create a pod", variant: "destructive" });
+                      navigate("/auth");
+                      return;
+                    }
+                    setCreateOpen(true);
+                  }}
+                >
+                  <Plus className="h-5 w-5 mr-2" />
+                  Create New Pod
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create a Study Pod</DialogTitle>
+                  <DialogDescription>Set up a new study group for your community.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Pod Name *</Label>
+                    <Input
+                      placeholder="e.g., AP Calculus Study Group"
+                      value={newPod.name}
+                      onChange={(e) => setNewPod(p => ({ ...p, name: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Subject</Label>
+                    <Input
+                      placeholder="e.g., Mathematics, Physics, CS"
+                      value={newPod.subject}
+                      onChange={(e) => setNewPod(p => ({ ...p, subject: e.target.value }))}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Textarea
+                      placeholder="What will this pod focus on?"
+                      value={newPod.description}
+                      onChange={(e) => setNewPod(p => ({ ...p, description: e.target.value }))}
+                    />
+                  </div>
+                  <Button
+                    className="w-full"
+                    onClick={() => createGroup.mutate()}
+                    disabled={!newPod.name.trim() || createGroup.isPending}
+                  >
+                    {createGroup.isPending ? (
+                      <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Creating...</>
+                    ) : (
+                      "Create Pod"
+                    )}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </CardContent>
         </Card>
       </div>
