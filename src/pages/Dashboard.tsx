@@ -232,7 +232,7 @@ const Dashboard = () => {
                   View Workshops
                 </Button>
               </Link>
-              <Link to="/community-forum">
+              <Link to="/community">
                 <Button variant="outline" className="w-full justify-start">
                   <Users className="h-4 w-4 mr-2" />
                   Join Discussion

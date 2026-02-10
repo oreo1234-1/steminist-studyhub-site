@@ -186,7 +186,15 @@ const AIStudyTools = () => {
 
       if (error) throw error;
 
-      setResults(prev => ({ ...prev, studyPlan: data.plan }));
+      // The edge function returns { studyPlan, tips, totalDays } or { studyPlan, tips, totalDays, rawResponse }
+      const planText = data.rawResponse || 
+        (data.studyPlan ? 
+          data.studyPlan.map((day: any) => 
+            `📅 Day ${day.day} (${day.date}) - ${day.topic}\n   Type: ${day.type}\n   Tasks: ${day.tasks?.join(', ')}\n   Time: ${day.estimatedTime}`
+          ).join('\n\n') + 
+          (data.tips ? '\n\n💡 Tips:\n' + data.tips.map((t: string) => `• ${t}`).join('\n') : '')
+        : JSON.stringify(data, null, 2));
+      setResults(prev => ({ ...prev, studyPlan: planText }));
       toast({
         title: "Study Plan Created! 📅",
         description: "Your personalized study schedule is ready",
