@@ -121,6 +121,98 @@ export type Database = {
         }
         Relationships: []
       }
+      event_registrations: {
+        Row: {
+          attended: boolean | null
+          event_id: string
+          id: string
+          registered_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attended?: boolean | null
+          event_id: string
+          id?: string
+          registered_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attended?: boolean | null
+          event_id?: string
+          id?: string
+          registered_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          current_attendees: number | null
+          date: string
+          description: string | null
+          duration: string | null
+          end_time: string | null
+          event_type: string
+          id: string
+          location: string | null
+          max_attendees: number | null
+          meeting_link: string | null
+          skills: string[] | null
+          speakers: string[] | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          current_attendees?: number | null
+          date: string
+          description?: string | null
+          duration?: string | null
+          end_time?: string | null
+          event_type?: string
+          id?: string
+          location?: string | null
+          max_attendees?: number | null
+          meeting_link?: string | null
+          skills?: string[] | null
+          speakers?: string[] | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          current_attendees?: number | null
+          date?: string
+          description?: string | null
+          duration?: string | null
+          end_time?: string | null
+          event_type?: string
+          id?: string
+          location?: string | null
+          max_attendees?: number | null
+          meeting_link?: string | null
+          skills?: string[] | null
+          speakers?: string[] | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       forum_comments: {
         Row: {
           author_id: string | null
@@ -310,6 +402,116 @@ export type Database = {
           },
         ]
       }
+      leadership_applications: {
+        Row: {
+          created_at: string | null
+          id: string
+          position: string
+          reviewed_at: string | null
+          reviewer_notes: string | null
+          statement: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          position: string
+          reviewed_at?: string | null
+          reviewer_notes?: string | null
+          statement: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          position?: string
+          reviewed_at?: string | null
+          reviewer_notes?: string | null
+          statement?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mentors: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          expertise: string
+          id: string
+          is_active: boolean | null
+          name: string
+          type_label: string | null
+          user_id: string | null
+          year_or_experience: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          expertise: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          type_label?: string | null
+          user_id?: string | null
+          year_or_experience?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          expertise?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          type_label?: string | null
+          user_id?: string | null
+          year_or_experience?: string | null
+        }
+        Relationships: []
+      }
+      mentorship_requests: {
+        Row: {
+          created_at: string | null
+          id: string
+          mentor_id: string
+          message: string | null
+          status: string
+          student_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          mentor_id: string
+          message?: string | null
+          status?: string
+          student_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          mentor_id?: string
+          message?: string | null
+          status?: string
+          student_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentorship_requests_mentor_id_fkey"
+            columns: ["mentor_id"]
+            isOneToOne: false
+            referencedRelation: "mentors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       newsletter_subscribers: {
         Row: {
           email: string
@@ -487,6 +689,57 @@ export type Database = {
           questions?: Json
           subject?: string
           title?: string
+        }
+        Relationships: []
+      }
+      resources: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          downloads_count: number | null
+          external_url: string | null
+          file_url: string | null
+          id: string
+          is_approved: boolean | null
+          level: string | null
+          question_count: number | null
+          subject: string | null
+          tags: string[] | null
+          title: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          downloads_count?: number | null
+          external_url?: string | null
+          file_url?: string | null
+          id?: string
+          is_approved?: boolean | null
+          level?: string | null
+          question_count?: number | null
+          subject?: string | null
+          tags?: string[] | null
+          title: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          downloads_count?: number | null
+          external_url?: string | null
+          file_url?: string | null
+          id?: string
+          is_approved?: boolean | null
+          level?: string | null
+          question_count?: number | null
+          subject?: string | null
+          tags?: string[] | null
+          title?: string
+          uploaded_by?: string | null
         }
         Relationships: []
       }
