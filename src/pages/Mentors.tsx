@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+import { MentorApplicationDialog } from "@/components/mentors/MentorApplicationDialog";
 
 interface MentorRow {
   id: string;
@@ -171,7 +172,7 @@ const Mentors = () => {
               <p className="text-sm text-muted-foreground mb-6">
                 Are you a college STEM student or professional? Share your journey and inspire the next generation.
               </p>
-              <Button size="lg" variant="secondary" className="w-full">Apply to Mentor</Button>
+              <MentorApplicationDialog />
             </CardContent>
           </Card>
         </div>

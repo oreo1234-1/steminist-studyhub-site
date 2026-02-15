@@ -7,6 +7,7 @@ import { BookOpen, FileText, Download, Sparkles, Loader2 } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { UploadResourceDialog } from "@/components/resources/UploadResourceDialog";
 
 interface ResourceRow {
   id: string;
@@ -25,11 +26,16 @@ const Resources = () => {
   const [resources, setResources] = useState<ResourceRow[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchResources = () => {
+    setLoading(true);
     supabase.from("resources").select("*").then(({ data }) => {
       if (data) setResources(data as ResourceRow[]);
       setLoading(false);
     });
+  };
+
+  useEffect(() => {
+    fetchResources();
   }, []);
 
   const filterByCategory = (cat: string) => resources.filter((r) => r.category === cat);
@@ -190,7 +196,7 @@ const Resources = () => {
             <CardHeader><CardTitle className="font-playfair">Contribute</CardTitle></CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground mb-4">Share your study guides and templates to help the community.</p>
-              <Button variant="secondary" className="w-full">Upload Resource</Button>
+              <UploadResourceDialog onUploaded={fetchResources} />
             </CardContent>
           </Card>
         </div>
