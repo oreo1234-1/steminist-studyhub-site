@@ -26,6 +26,7 @@ import Events from "./pages/Events";
 import Resources from "./pages/Resources";
 import Leadership from "./pages/Leadership";
 import Challenges from "./pages/Challenges";
+import AdminDashboard from "./pages/AdminDashboard";
 import { HelmetProvider } from "react-helmet-async";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const App = () => (
               <Route path="/resources" element={<Resources />} />
               <Route path="/leadership" element={<Leadership />} />
               <Route path="/challenges" element={<Challenges />} />
+              <Route path="/admin" element={<AdminDashboard />} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>
